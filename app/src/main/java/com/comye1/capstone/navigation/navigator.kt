@@ -1,10 +1,7 @@
 package com.comye1.capstone.navigation
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
@@ -83,7 +80,7 @@ fun BottomNavigationBar(navController: NavController) {
                 onClick = { navController.navigate(item.route) },
                 icon = { Icon(imageVector = item.icon, contentDescription = item.name) },
                 label = { Text(item.name) },
-//                selectedContentColor = DeepOrange,
+                selectedContentColor = MaterialTheme.colors.primaryVariant,
                 unselectedContentColor = Color.DarkGray
             )
         }
