@@ -23,6 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
+import com.comye1.capstone.navigation.BottomNavigationBar
+import com.comye1.capstone.navigation.Navigator
 import com.comye1.capstone.screens.FeedScreen
 import com.comye1.capstone.ui.theme.CapstoneTheme
 
@@ -30,11 +33,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
+            val navController = rememberNavController()
+            
             CapstoneTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
-//                    PLDetailScreen()
-                    FeedScreen()
+                Scaffold(bottomBar = {
+                    BottomNavigationBar(navController = navController)
+                }) {
+                    Navigator(navController = navController)
                 }
             }
         }

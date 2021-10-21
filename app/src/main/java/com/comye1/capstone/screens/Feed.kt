@@ -29,7 +29,7 @@ fun FeedScreen() {
             title = { Text("Feed") },
         )
     }) {
-        Column(
+        Column( // Todo : LazyColumn으로 변경
             Modifier
                 .fillMaxSize()
         ) {
@@ -67,7 +67,8 @@ fun FeedScreen() {
                 date = "어제",
                 goal = "토익 만점을 향해",
                 title = "오답을 고른 이유 분석하기",
-                description = "자꾸만 터무니 없는 실수를 한다. 왜 오답을 고르게 되는지 되짚어 보았다.",
+                description = "자꾸만 터무니 없는 실수를 한다. " +
+                        "왜 오답을 고르게 되는지 되짚어 보았다.",
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
             Divider(Modifier.height(8.dp))
@@ -91,7 +92,10 @@ fun FeedItem(
         modifier
             .fillMaxWidth()
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
                     imageVector = Icons.Default.Person,
@@ -102,21 +106,28 @@ fun FeedItem(
                         .border(shape = CircleShape, width = 1.dp, color = Color.LightGray)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Column() {
+                Column {
                     Text(text = id)
 //                    Spacer(modifier = Modifier.height(4.dp))
                     Text(text = goal, fontWeight = FontWeight.Bold)
                 }
 
             }
-            Row() {
+            Row {
                 Text(text = date, color = Color.Gray, fontSize = 12.sp)
             }
         }
         Spacer(modifier = Modifier.height(4.dp))
         Text(text = title, style = MaterialTheme.typography.h6)
         if (img != null) {
-            Image(painter = img, contentDescription = title, modifier = Modifier.fillMaxWidth().height(300.dp), contentScale = ContentScale.Crop)
+            Image(
+                painter = img,
+                contentDescription = title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp),
+                contentScale = ContentScale.Crop
+            )
         }
         Spacer(modifier = Modifier.height(4.dp))
         Text(text = description, style = MaterialTheme.typography.subtitle1)
