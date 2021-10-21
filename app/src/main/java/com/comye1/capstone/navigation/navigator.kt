@@ -3,6 +3,9 @@ package com.comye1.capstone.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.PlaylistPlay
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,9 +58,9 @@ data class BottomNavItem(
 
 object BottomNav {
     val items = listOf(
-        BottomNavItem(Screen.Feed.route, "Home", Icons.Outlined.Home),
-        BottomNavItem(Screen.List.route, "List", Icons.Outlined.List),
-        BottomNavItem(Screen.Setting.route, "Settings", Icons.Outlined.Settings),
+        BottomNavItem(Screen.Feed.route, "Feed", Icons.Default.Dashboard),
+        BottomNavItem(Screen.List.route, "List", Icons.Default.PlaylistPlay),
+        BottomNavItem(Screen.Setting.route, "Settings", Icons.Default.Settings),
     )
 }
 
