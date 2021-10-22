@@ -1,5 +1,6 @@
 package com.comye1.capstone.navigation
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -71,21 +72,25 @@ fun BottomNavigationBar(navController: NavController) {
 
     val currentRoute = navBackStackEntry?.destination?.route
 
-    BottomNavigation(
-        backgroundColor = Color.White,
-        elevation = 1.dp,
-        modifier = Modifier.padding(4.dp)
-    ) {
-        BottomNav.items.forEach { item ->
-            BottomNavigationItem(
-                selected = item.route == currentRoute,
-                enabled = item.route != currentRoute,
-                onClick = { navController.navigate(item.route) },
-                icon = { Icon(imageVector = item.icon, contentDescription = item.name) },
-                label = { Text(item.name) },
-                selectedContentColor = MaterialTheme.colors.primaryVariant,
-                unselectedContentColor = Color.DarkGray
-            )
+    Column {
+        Divider()
+        BottomNavigation(
+            backgroundColor = Color.White,
+            elevation = 0.dp
+        ) {
+            BottomNav.items.forEach { item ->
+                BottomNavigationItem(
+                    selected = item.route == currentRoute,
+                    enabled = item.route != currentRoute,
+                    onClick = { navController.navigate(item.route) },
+                    icon = { Icon(imageVector = item.icon, contentDescription = item.name) },
+                    label = { Text(item.name) },
+                    selectedContentColor = MaterialTheme.colors.primaryVariant,
+                    unselectedContentColor = Color.DarkGray,
+                    alwaysShowLabel = false
+                )
+            }
         }
     }
+
 }
