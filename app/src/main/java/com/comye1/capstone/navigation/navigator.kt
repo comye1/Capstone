@@ -21,6 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.comye1.capstone.screens.FeedScreen
 import com.comye1.capstone.screens.ListScreen
+import com.comye1.capstone.screens.SettingScreen
 
 sealed class Screen(
     val route: String
@@ -45,6 +46,7 @@ fun Navigator(navController: NavHostController) {
         }
         composable(Screen.Setting.route) {
             // TODO : setting screen
+            SettingScreen()
         }
     }
 }
