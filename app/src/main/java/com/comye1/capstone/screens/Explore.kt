@@ -157,7 +157,6 @@ fun ExploreMainScreen(onPlayListClicked: (PlayList) -> Unit) {
                     ),
                     onPlayListClicked
                 )
-
             }
             item {
                 Column(Modifier.height(50.dp)) {

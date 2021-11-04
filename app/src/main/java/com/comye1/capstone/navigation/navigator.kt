@@ -17,10 +17,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.comye1.capstone.screens.ExploreScreen
-import com.comye1.capstone.screens.FeedScreen
-import com.comye1.capstone.screens.ListScreen
-import com.comye1.capstone.screens.SettingScreen
+import com.comye1.capstone.screens.*
 
 sealed class Screen(
     val route: String

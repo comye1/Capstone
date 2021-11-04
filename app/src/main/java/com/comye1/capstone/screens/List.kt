@@ -7,14 +7,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -36,13 +37,52 @@ fun ListScreen() {
         ) {
             FilterSection(selectedFilterIndex = filterIndex, setIndex = setFilterIndex)
             Spacer(modifier = Modifier.height(16.dp))
-            MyGoalItem(goal = "매일매일 코어운동", prevTitle = "플랭크 40초 스쿼트 40회 런지 40회", nextTitle = "플랭크 45초 스쿼트 45회 런지 45회")
+            MyGoalItem(
+                goal = "매일매일 코어운동",
+                prevTitle = "플랭크 40초 스쿼트 40회 런지 40회",
+                nextTitle = "플랭크 45초 스쿼트 45회 런지 45회"
+            )
             Spacer(modifier = Modifier.height(16.dp))
             MyGoalItem(goal = "안드로이드 기본지식", prevTitle = "View Lifecycle", nextTitle = "ViewModel")
             Spacer(modifier = Modifier.height(16.dp))
             MyGoalItem(goal = "쇼팽 친해지기", prevTitle = "영웅 폴로네이즈", nextTitle = "환상 폴로네이즈")
             Spacer(modifier = Modifier.height(16.dp))
-            MyGoalItem(goal = "정보처리기사 필기", prevTitle = "소프트웨어 설계 - 요구사항 확인", nextTitle = "아직 작성되지 않았습니다.")
+            MyGoalItem(
+                goal = "정보처리기사 필기",
+                prevTitle = "소프트웨어 설계 - 요구사항 확인",
+                nextTitle = "아직 작성되지 않았습니다."
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun NewPlayLog() {
+
+    var text by remember {
+        mutableStateOf("")
+    }
+
+    Scaffold(topBar = {
+        TopAppBar(
+            title = { Text("기록하기") }
+        )
+    },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { /*TODO*/ }) {
+                Icon(imageVector = Icons.Default.Check, contentDescription = "complete")
+            }
+        },
+    ) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            TextField(value = "환상 폴로네이즈", onValueChange = {}, modifier = Modifier.fillMaxWidth())
+
+            TextField(value = text, onValueChange = { text = it }, modifier = Modifier.fillMaxSize())
         }
     }
 }
@@ -101,6 +141,7 @@ fun MyGoalItemPrev(text: String) {
         Text(text = text, overflow = TextOverflow.Ellipsis, maxLines = 1)
     }
 }
+
 @Composable
 fun MyGoalItemNext(text: String) {
     Row(Modifier.fillMaxWidth()) {
