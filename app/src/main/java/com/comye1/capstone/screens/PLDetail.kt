@@ -19,12 +19,19 @@ import com.comye1.capstone.R
 
 @Preview(showBackground = true)
 @Composable
-fun PLDetailScreen() {
+fun PLDetailPreview() {
+    PLDetailScreen {
+
+    }
+}
+
+@Composable
+fun PLDetailScreen(toBack: () -> Unit) {
     Scaffold(topBar = {
         TopAppBar(
             title = { },
             navigationIcon = {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = toBack) {
                     Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "back")
                 }
             },

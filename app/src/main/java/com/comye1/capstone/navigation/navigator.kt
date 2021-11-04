@@ -4,9 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Dashboard
-import androidx.compose.material.icons.filled.PlaylistPlay
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,6 +17,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.comye1.capstone.screens.ExploreScreen
 import com.comye1.capstone.screens.FeedScreen
 import com.comye1.capstone.screens.ListScreen
 import com.comye1.capstone.screens.SettingScreen
@@ -27,7 +26,8 @@ sealed class Screen(
     val route: String
 ) {
     object Feed : Screen("Feed")
-    object List : Screen("List")
+    object Explore : Screen("Explore")
+    object List : Screen("My List")
     object Setting : Screen("Setting")
 }
 
@@ -39,6 +39,9 @@ fun Navigator(navController: NavHostController) {
     ) {
         composable(Screen.Feed.route) {
             FeedScreen()
+        }
+        composable(Screen.Explore.route) {
+            ExploreScreen()
         }
         composable(Screen.List.route) {
             // TODO : list screen
@@ -62,6 +65,7 @@ data class BottomNavItem(
 object BottomNav {
     val items = listOf(
         BottomNavItem(Screen.Feed.route, "Feed", Icons.Default.Dashboard),
+        BottomNavItem(Screen.Explore.route, "Explore", Icons.Default.Explore),
         BottomNavItem(Screen.List.route, "List", Icons.Default.PlaylistPlay),
         BottomNavItem(Screen.Setting.route, "Settings", Icons.Default.Settings),
     )
