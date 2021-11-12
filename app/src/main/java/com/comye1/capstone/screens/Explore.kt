@@ -6,24 +6,34 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.comye1.capstone.R
 
 enum class ExploreState {
     Main,
-    Detail
+    Detail,
+    Search
 }
 
 @Composable
@@ -39,14 +49,68 @@ fun ExploreScreen() {
 
     when (screenState) {
         ExploreState.Main -> {
-            ExploreMainScreen { playList ->
-                setClickedPlayList(playList)
-                setScreenState(ExploreState.Detail)
-            }
+            ExploreMainScreen(
+                toSearchScreen = { setScreenState(ExploreState.Search) },
+                onPlayListClicked = { playList ->
+                    setClickedPlayList(playList)
+                    setScreenState(ExploreState.Detail)
+                }
+            )
         }
         ExploreState.Detail -> {
 //            ExploreDetailScreen()
-            PLDetailScreen{setScreenState(ExploreState.Main)}
+            PLDetailScreen { setScreenState(ExploreState.Main) }
+        }
+        ExploreState.Search -> {
+            ExploreSearchScreen {
+                setScreenState(ExploreState.Main)
+            }
+        }
+    }
+
+}
+
+@Composable
+fun ExploreSearchScreen(toMainScreen: () -> Unit) {
+
+    val (queryString, setQueryString) = remember {
+        mutableStateOf("")
+    }
+
+    val (queryResult, setQueryResult) = remember {
+        mutableStateOf("")
+    }
+
+    Scaffold(
+        topBar = {
+            SearchTopBar(
+                placeHolderText = "주제, 사용자, 플레이 리스트 이름 등 검색",
+                queryString = queryString,
+                setQueryString = setQueryString,
+                onBackButtonClick = toMainScreen
+            ) {
+                // onSearchKey
+                setQueryResult(queryString)
+            }
+        }
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = buildAnnotatedString {
+                    val boldStyle = SpanStyle( // 부분적으로 적용할 Style 정의
+                        color = MaterialTheme.colors.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                    pushStyle(boldStyle)
+                    append(queryResult)
+                    pop()
+                    append(" 검색 결과")
+                }
+            )
         }
     }
 
@@ -54,13 +118,13 @@ fun ExploreScreen() {
 
 
 @Composable
-fun ExploreMainScreen(onPlayListClicked: (PlayList) -> Unit) {
+fun ExploreMainScreen(onPlayListClicked: (PlayList) -> Unit, toSearchScreen: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Explore") },
                 actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = toSearchScreen) {
                         Icon(imageVector = Icons.Default.Search, contentDescription = "search icon")
                     }
                 }
@@ -166,6 +230,62 @@ fun ExploreMainScreen(onPlayListClicked: (PlayList) -> Unit) {
         }
     }
 }
+
+@Composable
+fun SearchTopBar(
+    placeHolderText: String,
+    queryString: String,
+    setQueryString: (String) -> Unit,
+    onBackButtonClick: () -> Unit,
+    onSearchKey: () -> Unit
+) {
+    TopAppBar(
+        elevation = 0.dp,
+        backgroundColor = Color.White,
+        navigationIcon = {
+            IconButton(onClick = onBackButtonClick) {
+                Icon(
+                    imageVector = Icons.Outlined.ArrowBack,
+                    contentDescription = "navigate back"
+                )
+            }
+        },
+        title = {
+            TextField(
+                value = queryString,
+                onValueChange = setQueryString,
+                placeholder = {
+                    Text(
+                        text = placeHolderText,
+                        style = MaterialTheme.typography.body1,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray
+                    )
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+
+                ),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Search
+                ),
+                keyboardActions = KeyboardActions(
+                    onSearch = { onSearchKey() }
+                ),
+            )
+        },
+        actions = {
+            if (queryString.isNotBlank()) {
+                IconButton(onClick = { setQueryString("") }) {
+                    Icon(imageVector = Icons.Default.Close, contentDescription = "delete")
+                }
+            }
+        }
+    )
+}
+
 
 @Composable
 fun PLList(

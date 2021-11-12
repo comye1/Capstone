@@ -27,6 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.comye1.capstone.navigation.BottomNavigationBar
 import com.comye1.capstone.navigation.Navigator
 import com.comye1.capstone.screens.FeedScreen
+import com.comye1.capstone.screens.NewPlayLog
 import com.comye1.capstone.ui.theme.CapstoneTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,7 +36,7 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             val navController = rememberNavController()
-            
+
             CapstoneTheme {
                 Scaffold(bottomBar = {
                     BottomNavigationBar(navController = navController)
