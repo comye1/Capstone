@@ -44,7 +44,7 @@ fun ExploreScreen() {
     }
 
     val (clickedPlayList, setClickedPlayList) = remember {
-        mutableStateOf(PlayList(null, "", ""))
+        mutableStateOf(PlayListThumb(null, "", ""))
     }
 
     when (screenState) {
@@ -59,7 +59,7 @@ fun ExploreScreen() {
         }
         ExploreState.Detail -> {
 //            ExploreDetailScreen()
-            PLDetailScreen { setScreenState(ExploreState.Main) }
+            PLDetailScreen(playList = samplePlayList) { setScreenState(ExploreState.Main) }
         }
         ExploreState.Search -> {
             ExploreSearchScreen {
@@ -118,7 +118,7 @@ fun ExploreSearchScreen(toMainScreen: () -> Unit) {
 
 
 @Composable
-fun ExploreMainScreen(onPlayListClicked: (PlayList) -> Unit, toSearchScreen: () -> Unit) {
+fun ExploreMainScreen(onPlayListClicked: (PlayListThumb) -> Unit, toSearchScreen: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -135,28 +135,28 @@ fun ExploreMainScreen(onPlayListClicked: (PlayList) -> Unit, toSearchScreen: () 
             item {
                 PLList(
                     title = "인기 플레이 리스트",
-                    list = listOf(
-                        PlayList(
+                    listThumb = listOf(
+                        PlayListThumb(
                             painterResource(id = R.drawable.toeic),
                             title = "토익 900 달성",
                             author = "김예원"
                         ),
-                        PlayList(
+                        PlayListThumb(
                             painterResource(id = R.drawable.sample),
                             title = "제목",
                             author = "작성자"
                         ),
-                        PlayList(
+                        PlayListThumb(
                             painterResource(id = R.drawable.sample),
                             title = "제목",
                             author = "작성자"
                         ),
-                        PlayList(
+                        PlayListThumb(
                             painterResource(id = R.drawable.sample),
                             title = "제목",
                             author = "작성자"
                         ),
-                        PlayList(
+                        PlayListThumb(
                             painterResource(id = R.drawable.sample),
                             title = "제목",
                             author = "작성자"
@@ -169,23 +169,23 @@ fun ExploreMainScreen(onPlayListClicked: (PlayList) -> Unit, toSearchScreen: () 
             item {
                 PLList(
                     title = "관심 주제 : 개발",
-                    list = listOf(
-                        PlayList(
+                    listThumb = listOf(
+                        PlayListThumb(
                             painterResource(id = R.drawable.sample),
                             title = "제목",
                             author = "작성자"
                         ),
-                        PlayList(
+                        PlayListThumb(
                             painterResource(id = R.drawable.sample),
                             title = "제목",
                             author = "작성자"
                         ),
-                        PlayList(
+                        PlayListThumb(
                             painterResource(id = R.drawable.sample),
                             title = "제목",
                             author = "작성자"
                         ),
-                        PlayList(
+                        PlayListThumb(
                             painterResource(id = R.drawable.sample),
                             title = "제목",
                             author = "작성자"
@@ -197,23 +197,23 @@ fun ExploreMainScreen(onPlayListClicked: (PlayList) -> Unit, toSearchScreen: () 
             item {
                 PLList(
                     title = "관심 주제 : 음악",
-                    list = listOf(
-                        PlayList(
+                    listThumb = listOf(
+                        PlayListThumb(
                             painterResource(id = R.drawable.sample),
                             title = "제목",
                             author = "작성자"
                         ),
-                        PlayList(
+                        PlayListThumb(
                             painterResource(id = R.drawable.sample),
                             title = "제목",
                             author = "작성자"
                         ),
-                        PlayList(
+                        PlayListThumb(
                             painterResource(id = R.drawable.sample),
                             title = "제목",
                             author = "작성자"
                         ),
-                        PlayList(
+                        PlayListThumb(
                             painterResource(id = R.drawable.sample),
                             title = "제목",
                             author = "작성자"
@@ -290,8 +290,8 @@ fun SearchTopBar(
 @Composable
 fun PLList(
     title: String,
-    list: List<PlayList>,
-    onItemClick: (PlayList) -> Unit
+    listThumb: List<PlayListThumb>,
+    onItemClick: (PlayListThumb) -> Unit
 ) {
     Column(
         Modifier
@@ -301,9 +301,9 @@ fun PLList(
         Text(text = title, style = MaterialTheme.typography.h5)
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow {
-            for (item in list) {
+            for (item in listThumb) {
                 item {
-                    PLItem(playList = item) { onItemClick(item) }
+                    PLItem(playListThumb = item) { onItemClick(item) }
                 }
             }
         }
@@ -314,7 +314,7 @@ fun PLList(
 @Composable
 fun PLItemPreview() {
     PLItem(
-        playList = PlayList(
+        playListThumb = PlayListThumb(
             painterResource(id = R.drawable.toeic),
             title = "토익 900 달성",
             author = "김예원"
@@ -324,7 +324,7 @@ fun PLItemPreview() {
 }
 
 @Composable
-fun PLItem(playList: PlayList, onItemClick: () -> Unit) {
+fun PLItem(playListThumb: PlayListThumb, onItemClick: () -> Unit) {
     Column(
         Modifier
             .width(150.dp)
@@ -333,7 +333,7 @@ fun PLItem(playList: PlayList, onItemClick: () -> Unit) {
             .clickable(onClick = onItemClick)
     ) {
         Image(
-            painter = playList.img ?: painterResource(id = R.drawable.sample),
+            painter = playListThumb.img ?: painterResource(id = R.drawable.sample),
             contentDescription = "playlist image",
             modifier = Modifier
                 .width(150.dp)
@@ -342,12 +342,12 @@ fun PLItem(playList: PlayList, onItemClick: () -> Unit) {
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = playList.title, fontWeight = FontWeight.Bold)
-        Text(text = playList.author)
+        Text(text = playListThumb.title, fontWeight = FontWeight.Bold)
+        Text(text = playListThumb.author)
     }
 }
 
-data class PlayList(
+data class PlayListThumb(
     val img: Painter?,
     val title: String,
     val author: String,
