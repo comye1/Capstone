@@ -42,7 +42,8 @@ fun Navigator(navController: NavHostController) {
         }
         composable(Screen.List.route) {
             // TODO : list screen
-            ListScreen()
+//            ListScreen()
+            CreateScreen()
         }
         composable(Screen.Setting.route) {
             // TODO : setting screen

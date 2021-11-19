@@ -8,7 +8,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddBox
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.NoteAdd
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,11 +27,20 @@ fun ListScreen() {
         mutableStateOf(0)
     }
 
-    Scaffold(topBar = {
-        TopAppBar(
-            title = { Text("List") },
-        )
-    }) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text("List")
+                },
+                actions = {
+                    IconButton(onClick = {}) {
+                        Icon(imageVector = Icons.Default.NoteAdd, contentDescription = "add")
+                    }
+                }
+            )
+        },
+    ) {
         Column(
             Modifier
                 .fillMaxSize()
@@ -64,11 +75,12 @@ fun NewPlayLog() {
         mutableStateOf("")
     }
 
-    Scaffold(topBar = {
-        TopAppBar(
-            title = { Text("기록하기") }
-        )
-    },
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("기록하기") }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = { /*TODO*/ }) {
                 Icon(imageVector = Icons.Default.Check, contentDescription = "complete")
@@ -82,7 +94,11 @@ fun NewPlayLog() {
         ) {
             TextField(value = "환상 폴로네이즈", onValueChange = {}, modifier = Modifier.fillMaxWidth())
 
-            TextField(value = text, onValueChange = { text = it }, modifier = Modifier.fillMaxSize())
+            TextField(
+                value = text,
+                onValueChange = { text = it },
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }
