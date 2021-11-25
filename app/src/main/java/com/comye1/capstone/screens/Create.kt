@@ -1,6 +1,8 @@
 package com.comye1.capstone.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -9,14 +11,18 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.comye1.capstone.R
 
 @Composable
@@ -34,6 +40,41 @@ fun CreateScreen(
     ),
     toBack: () -> Unit = {}
 ) {
+    val createListCardDialog = remember { mutableStateOf(false) }
+    if (createListCardDialog.value) {
+        Dialog(onDismissRequest = { createListCardDialog.value = false }) {
+            Column(
+                Modifier
+                    .clip(RoundedCornerShape(size = 12.dp))
+                    .background(Color.White)
+                    .padding(16.dp)
+            ) {
+                Text(text = "${playList.playItems.size + 1} 차시")
+                Spacer(modifier = Modifier.height(16.dp))
+                TextField(value = "", onValueChange = {}, placeholder = { Text("제목") })
+                Spacer(modifier = Modifier.height(16.dp))
+                TextField(
+                    value = "",
+                    onValueChange = {},
+                    placeholder = { Text("내용") },
+                    modifier = Modifier.height(300.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Button(onClick = { createListCardDialog.value = false }) {
+                        Text("취소")
+                    }
+                    Button(onClick = { createListCardDialog.value = false }) {
+                        Text("저장")
+                    }
+                }
+            }
+        }
+    }
+
     Scaffold(topBar = {
         TopAppBar(
             title = { },
@@ -91,7 +132,9 @@ fun CreateScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                 }
                 item {
-                    CreateListCard(index = playList.playItems.size)
+                    CreateListCard(
+                        index = playList.playItems.size,
+                        onClick = { createListCardDialog.value = true })
                 }
                 item {
                     Spacer(modifier = Modifier.height(56.dp))
@@ -102,11 +145,13 @@ fun CreateScreen(
 }
 
 @Composable
-fun CreateListCard(index: Int) {
+fun CreateListCard(index: Int, onClick: () -> Unit) {
     Card(
         elevation = 5.dp,
         shape = RoundedCornerShape(5.dp),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         backgroundColor = MaterialTheme.colors.primary
     ) {
         Row(
@@ -127,7 +172,7 @@ fun CreateListCard(index: Int) {
                     .width(1.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Column() {
+            Column {
                 Text(text = "추가하기", style = MaterialTheme.typography.h6)
             }
         }

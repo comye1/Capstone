@@ -1,14 +1,14 @@
 package com.comye1.capstone.navigation
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.icons.filled.PlaylistPlay
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -26,6 +26,7 @@ sealed class Screen(
     object Explore : Screen("Explore")
     object List : Screen("My List")
     object Setting : Screen("Setting")
+    object Create : Screen("Create")
 }
 
 @Composable
@@ -42,8 +43,10 @@ fun Navigator(navController: NavHostController) {
         }
         composable(Screen.List.route) {
             // TODO : list screen
-//            ListScreen()
-            CreateScreen()
+            ListScreen(navController)
+        }
+        composable(Screen.Create.route) {
+            CreateScreen(toBack = {navController.popBackStack()})
         }
         composable(Screen.Setting.route) {
             // TODO : setting screen
@@ -51,7 +54,6 @@ fun Navigator(navController: NavHostController) {
         }
     }
 }
-
 
 
 data class BottomNavItem(

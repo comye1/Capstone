@@ -8,7 +8,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddBox
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.NoteAdd
 import androidx.compose.runtime.*
@@ -19,9 +18,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.comye1.capstone.navigation.Screen
 
 @Composable
-fun ListScreen() {
+fun ListScreen(navController: NavHostController) {
 
     val (filterIndex, setFilterIndex) = remember {
         mutableStateOf(0)
@@ -51,17 +52,26 @@ fun ListScreen() {
             MyGoalItem(
                 goal = "매일매일 코어운동",
                 prevTitle = "플랭크 40초 스쿼트 40회 런지 40회",
-                nextTitle = "플랭크 45초 스쿼트 45회 런지 45회"
+                nextTitle = "플랭크 45초 스쿼트 45회 런지 45회",
+                onClick = { navController.navigate(Screen.Create.route) }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            MyGoalItem(goal = "안드로이드 기본지식", prevTitle = "View Lifecycle", nextTitle = "ViewModel")
+            MyGoalItem(goal = "안드로이드 기본지식",
+                prevTitle = "View Lifecycle",
+                nextTitle = "ViewModel",
+                onClick = { navController.navigate(Screen.Create.route) })
             Spacer(modifier = Modifier.height(16.dp))
-            MyGoalItem(goal = "쇼팽 친해지기", prevTitle = "영웅 폴로네이즈", nextTitle = "환상 폴로네이즈")
+            MyGoalItem(
+                goal = "쇼팽 친해지기",
+                prevTitle = "영웅 폴로네이즈",
+                nextTitle = "환상 폴로네이즈",
+                onClick = { navController.navigate(Screen.Create.route) })
             Spacer(modifier = Modifier.height(16.dp))
             MyGoalItem(
                 goal = "정보처리기사 필기",
                 prevTitle = "소프트웨어 설계 - 요구사항 확인",
-                nextTitle = "아직 작성되지 않았습니다."
+                nextTitle = "아직 작성되지 않았습니다.",
+                onClick = { navController.navigate(Screen.Create.route) }
             )
         }
     }
@@ -104,12 +114,13 @@ fun NewPlayLog() {
 }
 
 @Composable
-fun MyGoalItem(goal: String, prevTitle: String, nextTitle: String) {
+fun MyGoalItem(goal: String, prevTitle: String, nextTitle: String, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(5.dp))
             .border(1.dp, Color.LightGray, RoundedCornerShape(5.dp))
+            .clickable { onClick() }
     ) {
         Row(Modifier.padding(8.dp)) {
             Text(text = goal, style = MaterialTheme.typography.h6, fontWeight = FontWeight.Bold)
