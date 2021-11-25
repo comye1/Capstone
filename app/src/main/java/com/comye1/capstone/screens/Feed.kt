@@ -4,13 +4,17 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Comment
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -81,11 +85,40 @@ object FeedItems {
                     "왜 오답을 고르게 되는지 되짚어 보았다.",
         ),
     )
+
+    //    val likeList = mutableListOf(
+//        Pair(0, false),
+//        Pair(2, true),
+//        Pair(11, true),
+//        Pair(3, false),
+//        Pair(1, false),
+//        Pair(5, true)
+//    )
+    val commentList = listOf(
+        2,
+        0,
+        5,
+        1,
+        6,
+        3
+    )
 }
 
 @Preview
 @Composable
 fun FeedScreen() {
+
+    val likeList = remember {
+        mutableStateListOf(
+            Pair(0, false),
+            Pair(2, true),
+            Pair(11, true),
+            Pair(3, false),
+            Pair(1, false),
+            Pair(5, true)
+        )
+    }
+
     Scaffold(topBar = {
         TopAppBar(
             title = { Text("Feed") },
@@ -95,9 +128,23 @@ fun FeedScreen() {
             Modifier
                 .fillMaxSize()
         ) {
-            items(FeedItems.list) { item ->
+            itemsIndexed(FeedItems.list) { index, item ->
                 Divider(Modifier.height(8.dp))
-                FeedItem(item, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+                FeedItem(
+                    item,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    likeCount = likeList[index].first,
+                    userLike = likeList[index].second,
+                    likeButtonClick = {
+                        if(likeList[index].second) { // 하트 해제
+                            likeList[index] = Pair(likeList[index].first - 1, !likeList[index].second)
+                        }else {
+                            likeList[index] = Pair(likeList[index].first + 1, !likeList[index].second)
+                        }
+                    },
+                    commentCount = FeedItems.commentList[index],
+                    commentButtonClick = {}
+                )
             }
             item {
                 Divider(modifier = Modifier.height(64.dp))
@@ -109,6 +156,11 @@ fun FeedScreen() {
 @Composable
 fun FeedItem(
     item: FeedItemDataClass,
+    likeCount: Int,
+    userLike: Boolean,
+    likeButtonClick: () -> Unit,
+    commentCount: Int,
+    commentButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -154,5 +206,32 @@ fun FeedItem(
         }
         Spacer(modifier = Modifier.height(4.dp))
         Text(text = item.description, style = MaterialTheme.typography.subtitle1)
+        Row {
+            IconButton(onClick = { likeButtonClick() }) {
+                Row {
+                    if (userLike) {
+                        Icon(imageVector = Icons.Default.Favorite, contentDescription = "like this")
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.FavoriteBorder,
+                            contentDescription = "don't like this"
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "$likeCount")
+                }
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            IconButton(onClick = { commentButtonClick() }) {
+                Row {
+                    Icon(
+                        imageVector = Icons.Outlined.Comment,
+                        contentDescription = "write a comment"
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "$commentCount")
+                }
+            }
+        }
     }
 }
