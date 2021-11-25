@@ -41,6 +41,12 @@ fun CreateScreen(
     toBack: () -> Unit = {}
 ) {
     val createListCardDialog = remember { mutableStateOf(false) }
+    val (titleText, setTitleText) = remember {
+        mutableStateOf("")
+    }
+    val (bodyText, setBodyText) = remember {
+        mutableStateOf("")
+    }
     if (createListCardDialog.value) {
         Dialog(onDismissRequest = { createListCardDialog.value = false }) {
             Column(
@@ -51,11 +57,11 @@ fun CreateScreen(
             ) {
                 Text(text = "${playList.playItems.size + 1} 차시")
                 Spacer(modifier = Modifier.height(16.dp))
-                TextField(value = "", onValueChange = {}, placeholder = { Text("제목") })
+                TextField(value = titleText, onValueChange = setTitleText, placeholder = { Text("제목") })
                 Spacer(modifier = Modifier.height(16.dp))
                 TextField(
-                    value = "",
-                    onValueChange = {},
+                    value = bodyText,
+                    onValueChange = setBodyText,
                     placeholder = { Text("내용") },
                     modifier = Modifier.height(300.dp)
                 )
