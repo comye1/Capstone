@@ -41,10 +41,7 @@ fun CreateScreen(
     toBack: () -> Unit = {}
 ) {
     val createListCardDialog = remember { mutableStateOf(false) }
-    val (titleText, setTitleText) = remember {
-        mutableStateOf("")
-    }
-    val (bodyText, setBodyText) = remember {
+    val (planText, setPlanText) = remember {
         mutableStateOf("")
     }
     if (createListCardDialog.value) {
@@ -55,14 +52,12 @@ fun CreateScreen(
                     .background(Color.White)
                     .padding(16.dp)
             ) {
-                Text(text = "${playList.playItems.size + 1} 차시")
-                Spacer(modifier = Modifier.height(16.dp))
-                TextField(value = titleText, onValueChange = setTitleText, placeholder = { Text("제목") })
+                Text(text = "${playList.playItems.size + 1} 차시 계획 작성하기")
                 Spacer(modifier = Modifier.height(16.dp))
                 TextField(
-                    value = bodyText,
-                    onValueChange = setBodyText,
-                    placeholder = { Text("내용") },
+                    value = planText,
+                    onValueChange = setPlanText,
+                    placeholder = { Text("계획 내용") },
                     modifier = Modifier.height(300.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
