@@ -13,11 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.comye1.capstone.screens.*
 
 sealed class Screen(
     val route: String
@@ -26,33 +22,6 @@ sealed class Screen(
     object Explore : Screen("Explore")
     object List : Screen("My List")
     object Setting : Screen("Setting")
-    object Create : Screen("Create")
-}
-
-@Composable
-fun Navigator(navController: NavHostController) {
-    NavHost(
-        navController = navController,
-        startDestination = Screen.Feed.route
-    ) {
-        composable(Screen.Feed.route) {
-            FeedScreen()
-        }
-        composable(Screen.Explore.route) {
-            ExploreScreen()
-        }
-        composable(Screen.List.route) {
-            // TODO : list screen
-            ListScreen(navController)
-        }
-        composable(Screen.Create.route) {
-            CreateScreen(toBack = {navController.popBackStack()})
-        }
-        composable(Screen.Setting.route) {
-            // TODO : setting screen
-            SettingScreen()
-        }
-    }
 }
 
 

@@ -1,6 +1,7 @@
 package com.comye1.capstone.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -35,7 +36,7 @@ data class PlayItem(
 @Preview(showBackground = true)
 @Composable
 fun PLDetailPreview() {
-    PLDetailScreen(playList = samplePlayList) {
+    GoalDetailScreen(playList = samplePlayList) {
         
     }
 }
@@ -74,10 +75,10 @@ val samplePlayList = PlayList(
 )
 
 @Composable
-fun PLDetailScreen(playList: PlayList, toBack: () -> Unit) {
+fun GoalDetailScreen(playList: PlayList = samplePlayList, toBack: () -> Unit) {
     Scaffold(topBar = {
         TopAppBar(
-            title = { },
+            title = { Text(text = "Goal Detail") },
             navigationIcon = {
                 IconButton(onClick = toBack) {
                     Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "back")
@@ -108,7 +109,7 @@ fun PLDetailScreen(playList: PlayList, toBack: () -> Unit) {
                         fontWeight = FontWeight.ExtraBold,
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "소유자: ${playList.author}님")
+                    Text(text = "소유자: ${playList.author}님", modifier = Modifier.clickable {  })
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(text = "${playList.playItems.size}차시 과정")
                 }

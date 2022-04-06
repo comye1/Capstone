@@ -1,4 +1,4 @@
-package com.comye1.capstone.screens
+package com.comye1.capstone.screens.explore
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -29,6 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.comye1.capstone.R
+import com.comye1.capstone.screens.GoalDetailScreen
+import com.comye1.capstone.screens.samplePlayList
 
 enum class ExploreState {
     Main,
@@ -37,7 +39,7 @@ enum class ExploreState {
 }
 
 @Composable
-fun ExploreScreen() {
+fun Explore(paddingValues: PaddingValues) {
 
     val (screenState, setScreenState) = remember {
         mutableStateOf(ExploreState.Main)
@@ -50,6 +52,7 @@ fun ExploreScreen() {
     when (screenState) {
         ExploreState.Main -> {
             ExploreMainScreen(
+                paddingValues = paddingValues,
                 toSearchScreen = { setScreenState(ExploreState.Search) },
                 onPlayListClicked = { playList ->
                     setClickedPlayList(playList)
@@ -57,10 +60,10 @@ fun ExploreScreen() {
                 }
             )
         }
-        ExploreState.Detail -> {
-//            ExploreDetailScreen()
-            PLDetailScreen(playList = samplePlayList) { setScreenState(ExploreState.Main) }
-        }
+//        ExploreState.Detail -> {
+////            ExploreDetailScreen()
+//            GoalDetailScreen(playList = samplePlayList) { setScreenState(ExploreState.Main) }
+//        }
         ExploreState.Search -> {
             ExploreSearchScreen {
                 setScreenState(ExploreState.Main)
@@ -118,7 +121,11 @@ fun ExploreSearchScreen(toMainScreen: () -> Unit) {
 
 
 @Composable
-fun ExploreMainScreen(onPlayListClicked: (PlayListThumb) -> Unit, toSearchScreen: () -> Unit) {
+fun ExploreMainScreen(
+    paddingValues: PaddingValues,
+    onPlayListClicked: (PlayListThumb) -> Unit,
+    toSearchScreen: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -131,7 +138,11 @@ fun ExploreMainScreen(onPlayListClicked: (PlayListThumb) -> Unit, toSearchScreen
             )
         }
     ) {
-        LazyColumn() {
+        LazyColumn(
+            Modifier
+                .fillMaxWidth()
+                .padding(paddingValues = paddingValues)
+        ) {
             item {
                 PLList(
                     title = "인기 플레이 리스트",
@@ -221,11 +232,6 @@ fun ExploreMainScreen(onPlayListClicked: (PlayListThumb) -> Unit, toSearchScreen
                     ),
                     onPlayListClicked
                 )
-            }
-            item {
-                Column(Modifier.height(50.dp)) {
-
-                }
             }
         }
     }

@@ -47,6 +47,7 @@ fun CreateScreen(
     if (createListCardDialog.value) {
         Dialog(onDismissRequest = { createListCardDialog.value = false }) {
             Column(
+
                 Modifier
                     .clip(RoundedCornerShape(size = 12.dp))
                     .background(Color.White)

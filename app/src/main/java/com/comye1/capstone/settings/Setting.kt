@@ -1,4 +1,4 @@
-package com.comye1.capstone.screens
+package com.comye1.capstone.screens.settings
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.comye1.capstone.R
 
 @Composable
-fun SettingScreen() {
+fun SettingsScreen(paddingValues: PaddingValues) {
     Scaffold(topBar = {
         TopAppBar(
             title = { Text("Settings") },

@@ -1,4 +1,4 @@
-package com.comye1.capstone.screens
+package com.comye1.capstone.screens.feed
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.comye1.capstone.R
@@ -104,9 +103,8 @@ object FeedItems {
     )
 }
 
-@Preview
 @Composable
-fun FeedScreen() {
+fun FeedScreen(paddingValues: PaddingValues) {
 
     val likeList = remember {
         mutableStateListOf(
@@ -127,6 +125,7 @@ fun FeedScreen() {
         LazyColumn(
             Modifier
                 .fillMaxSize()
+                .padding(paddingValues = paddingValues)
         ) {
             itemsIndexed(FeedItems.list) { index, item ->
                 Divider(Modifier.height(8.dp))
@@ -136,10 +135,12 @@ fun FeedScreen() {
                     likeCount = likeList[index].first,
                     userLike = likeList[index].second,
                     likeButtonClick = {
-                        if(likeList[index].second) { // 하트 해제
-                            likeList[index] = Pair(likeList[index].first - 1, !likeList[index].second)
-                        }else {
-                            likeList[index] = Pair(likeList[index].first + 1, !likeList[index].second)
+                        if (likeList[index].second) { // 하트 해제
+                            likeList[index] =
+                                Pair(likeList[index].first - 1, !likeList[index].second)
+                        } else {
+                            likeList[index] =
+                                Pair(likeList[index].first + 1, !likeList[index].second)
                         }
                     },
                     commentCount = FeedItems.commentList[index],
@@ -147,7 +148,7 @@ fun FeedScreen() {
                 )
             }
             item {
-                Divider(modifier = Modifier.height(64.dp))
+                Divider(Modifier.height(8.dp))
             }
         }
     }

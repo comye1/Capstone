@@ -1,9 +1,10 @@
-package com.comye1.capstone.screens
+package com.comye1.capstone.screens.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -18,11 +19,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import com.comye1.capstone.navigation.Screen
 
 @Composable
-fun ListScreen(navController: NavHostController) {
+fun ListScreen(paddingValues: PaddingValues) {
 
     val (filterIndex, setFilterIndex) = remember {
         mutableStateOf(0)
@@ -49,30 +48,54 @@ fun ListScreen(navController: NavHostController) {
         ) {
             FilterSection(selectedFilterIndex = filterIndex, setIndex = setFilterIndex)
             Spacer(modifier = Modifier.height(16.dp))
-            MyGoalItem(
-                goal = "매일매일 코어운동",
-                prevTitle = "플랭크 40초 스쿼트 40회 런지 40회",
-                nextTitle = "플랭크 45초 스쿼트 45회 런지 45회",
-                onClick = { navController.navigate(Screen.Create.route) }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            MyGoalItem(goal = "안드로이드 기본지식",
-                prevTitle = "View Lifecycle",
-                nextTitle = "ViewModel",
-                onClick = { navController.navigate(Screen.Create.route) })
-            Spacer(modifier = Modifier.height(16.dp))
-            MyGoalItem(
-                goal = "쇼팽 친해지기",
-                prevTitle = "영웅 폴로네이즈",
-                nextTitle = "환상 폴로네이즈",
-                onClick = { navController.navigate(Screen.Create.route) })
-            Spacer(modifier = Modifier.height(16.dp))
-            MyGoalItem(
-                goal = "정보처리기사 필기",
-                prevTitle = "소프트웨어 설계 - 요구사항 확인",
-                nextTitle = "아직 작성되지 않았습니다.",
-                onClick = { navController.navigate(Screen.Create.route) }
-            )
+            LazyColumn (
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)){
+                item{
+                    MyGoalItem(
+                        goal = "매일매일 코어운동",
+                        prevTitle = "플랭크 40초 스쿼트 40회 런지 40회",
+                        nextTitle = "플랭크 45초 스쿼트 45회 런지 45회",
+                        onClick = {
+//                    navController.navigate(Screen.Create.route)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                item {
+                    MyGoalItem(goal = "안드로이드 기본지식",
+                        prevTitle = "View Lifecycle",
+                        nextTitle = "ViewModel",
+                        onClick = {
+//                    navController.navigate(Screen.Create.route)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                item {
+                    MyGoalItem(
+                        goal = "쇼팽 친해지기",
+                        prevTitle = "영웅 폴로네이즈",
+                        nextTitle = "환상 폴로네이즈",
+                        onClick = {
+//                    navController.navigate(Screen.Create.route)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                item {
+                    MyGoalItem(
+                        goal = "정보처리기사 필기",
+                        prevTitle = "소프트웨어 설계 - 요구사항 확인",
+                        nextTitle = "아직 작성되지 않았습니다.",
+                        onClick = {
+//                    navController.navigate(Screen.Create.route)
+                        }
+                    )
+                }
+            }
+
         }
     }
 }
