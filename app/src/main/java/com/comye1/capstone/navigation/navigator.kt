@@ -57,7 +57,12 @@ fun BottomNavigationBar(navController: NavController) {
                 BottomNavigationItem(
                     selected = item.route == currentRoute,
                     enabled = item.route != currentRoute,
-                    onClick = { navController.navigate(item.route) },
+                    onClick = {
+                        navController.navigate(item.route) {
+                            popUpTo(Screen.Feed.route)
+                            launchSingleTop = true
+                        }
+                    },
                     icon = { Icon(imageVector = item.icon, contentDescription = item.name) },
                     label = { Text(item.name) },
                     selectedContentColor = MaterialTheme.colors.primaryVariant,
