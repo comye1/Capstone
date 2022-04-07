@@ -1,7 +1,9 @@
 package com.comye1.capstone
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -20,6 +22,7 @@ import com.comye1.capstone.screens.list.ListScreen
 import com.comye1.capstone.screens.mygoal.MyGoalScreen
 import com.comye1.capstone.screens.userdetail.UserDetailScreen
 import com.comye1.capstone.screens.settings.SettingsScreen
+import com.comye1.capstone.ui.ExitDialog
 import com.comye1.capstone.ui.theme.CapstoneTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,10 +32,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
 
+            Log.d("mainactivity", "oncreate")
+
             val navController = rememberNavController()
 
             val (bottomBarShown, showBottomBar) = remember {
                 mutableStateOf(true)
+            }
+
+            val (exitDialogShown, showExitDialog) = remember {
+                mutableStateOf(false)
             }
 
             CapstoneTheme {
@@ -81,12 +90,22 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+            /*
+            뒤로가기 동작 처리
+            */
+            BackHandler(
+                onBack = {
+                    showExitDialog(true)
+                }
+            )
+            /*
+            종료 다이얼로그
+             */
+            if (exitDialogShown) {
+                ExitDialog(onDismiss = { showExitDialog(false) }) {
+                    finishAffinity()
+                }
+            }
         }
     }
 }
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
