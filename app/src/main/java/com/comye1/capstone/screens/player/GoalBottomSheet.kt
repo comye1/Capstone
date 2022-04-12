@@ -33,6 +33,7 @@ fun PlayerBottomSheetHandle() {
         Modifier
             .fillMaxWidth()
             .height(96.dp)
+            .background(MaterialTheme.colors.secondaryVariant)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
 //                                contentAlignment = Alignment.Center
@@ -56,11 +57,12 @@ fun PlayerBottomSheetHandle() {
 
 @Composable
 fun PlayerBottomSheetContent(bottomPadding: Dp) {
-    Divider()
+    Divider(color = Color.White)
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .height(500.dp)
+            .background(MaterialTheme.colors.secondaryVariant)
             .padding(16.dp)
     ) {
         Row(

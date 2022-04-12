@@ -9,7 +9,6 @@ import androidx.compose.material.icons.filled.PlaylistPlay
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -50,7 +49,6 @@ fun BottomNavigationBar(navController: NavController) {
     Column {
         Divider()
         BottomNavigation(
-            backgroundColor = Color.White,
             elevation = 0.dp
         ) {
             BottomNav.items.forEach { item ->
@@ -65,8 +63,6 @@ fun BottomNavigationBar(navController: NavController) {
                     },
                     icon = { Icon(imageVector = item.icon, contentDescription = item.name) },
                     label = { Text(item.name) },
-                    selectedContentColor = MaterialTheme.colors.primaryVariant,
-                    unselectedContentColor = Color.DarkGray,
                     alwaysShowLabel = false
                 )
             }

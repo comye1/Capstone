@@ -5,11 +5,15 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -20,17 +24,23 @@ import com.comye1.capstone.screens.explore.Explore
 import com.comye1.capstone.screens.feed.FeedScreen
 import com.comye1.capstone.screens.list.ListScreen
 import com.comye1.capstone.screens.mygoal.MyGoalScreen
-import com.comye1.capstone.screens.userdetail.UserDetailScreen
+import com.comye1.capstone.screens.player.PlayerBottomSheetContent
+import com.comye1.capstone.screens.player.PlayerBottomSheetHandle
 import com.comye1.capstone.screens.settings.SettingsScreen
+import com.comye1.capstone.screens.userdetail.UserDetailScreen
 import com.comye1.capstone.ui.ExitDialog
 import com.comye1.capstone.ui.theme.CapstoneTheme
+import com.comye1.capstone.ui.theme.StatusBarColor
 import dagger.hilt.android.AndroidEntryPoint
 
+@ExperimentalMaterialApi
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
+            window.statusBarColor = StatusBarColor.toArgb()
 
             Log.d("mainactivity", "oncreate")
 
@@ -46,47 +56,61 @@ class MainActivity : ComponentActivity() {
 
             CapstoneTheme {
                 Scaffold(bottomBar = {
-                    if(bottomBarShown) {
+                    if (bottomBarShown) {
                         BottomNavigationBar(navController = navController)
                     }
                 }) { paddingValues ->
-                    NavHost(
-                        navController = navController,
-                        startDestination = Screen.Feed.route
+
+
+                    val scope = rememberCoroutineScope()
+                    val scaffoldState = rememberBottomSheetScaffoldState()
+
+                    BottomSheetScaffold(
+                        sheetContent = {
+                            PlayerBottomSheetHandle()
+                            PlayerBottomSheetContent(paddingValues.calculateBottomPadding())
+                        },
+                        scaffoldState = scaffoldState,
+                        sheetPeekHeight = (96.dp + paddingValues.calculateBottomPadding()),
                     ) {
-                        composable(Screen.Feed.route) {
-                            showBottomBar(true)
-                            FeedScreen(paddingValues = paddingValues)
-                        }
-                        composable(Screen.Explore.route) {
-                            showBottomBar(true)
-                            Explore(paddingValues)
-                        }
-                        composable(Screen.List.route) {
-                            showBottomBar(true)
-                            ListScreen(paddingValues)
-                        }
-                        composable(Screen.Setting.route) {
-                            showBottomBar(true)
-                            SettingsScreen(paddingValues)
-                        }
-                        composable("user_detail"){
-                            showBottomBar(false)
-                            UserDetailScreen(toBack = {  }) {
-
+                        NavHost(
+                            navController = navController,
+                            startDestination = Screen.Feed.route
+                        ) {
+                            composable(Screen.Feed.route) {
+                                showBottomBar(true)
+                                FeedScreen()
                             }
-                        }
-                        composable("goal_Detail") {
-                            showBottomBar(false)
-                            GoalDetailScreen {
-
+                            composable(Screen.Explore.route) {
+                                showBottomBar(true)
+                                Explore(paddingValues)
                             }
-                        }
-                        composable("my_goal") {
-                            showBottomBar(false)
-                            MyGoalScreen()
-                        }
+                            composable(Screen.List.route) {
+                                showBottomBar(true)
+                                ListScreen(paddingValues)
+                            }
+                            composable(Screen.Setting.route) {
+                                showBottomBar(true)
+                                SettingsScreen(paddingValues)
+                            }
+                            composable("user_detail") {
+                                showBottomBar(false)
+                                UserDetailScreen(toBack = { }) {
 
+                                }
+                            }
+                            composable("goal_Detail") {
+                                showBottomBar(false)
+                                GoalDetailScreen {
+
+                                }
+                            }
+                            composable("my_goal") {
+                                showBottomBar(false)
+                                MyGoalScreen()
+                            }
+
+                        }
                     }
                 }
             }

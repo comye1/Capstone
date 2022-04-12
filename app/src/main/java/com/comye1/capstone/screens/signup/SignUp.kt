@@ -14,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.comye1.capstone.ui.theme.CapstoneTheme
 import kotlinx.coroutines.flow.collect
 
 @Composable
@@ -24,42 +25,43 @@ fun SignUpScreen(
     val subNavController = rememberNavController()
     val context = LocalContext.current
 
-    NavHost(navController = subNavController, startDestination = "email") {
-        composable("email") {
-            SignUpContainer {
-                SignUpEmailScreen(viewModel) {
-                    // next
-                    subNavController.navigate("user_name")
+    CapstoneTheme {
+        NavHost(navController = subNavController, startDestination = "email") {
+            composable("email") {
+                SignUpContainer {
+                    SignUpEmailScreen(viewModel) {
+                        // next
+                        subNavController.navigate("user_name")
+                    }
+                }
+            }
+
+            composable("user_name") {
+                SignUpContainer {
+                    SignUpUserNameScreen(
+                        userName = viewModel.userName,
+                        setUserName = { viewModel.userName = it },
+                    ) {
+                        subNavController.navigate("password")
+                    }
+                }
+            }
+
+            composable("password") {
+                SignUpContainer {
+                    SignUpPasswordScreen(
+                        password = viewModel.password,
+                        setPassword = { viewModel.password = it }
+                    ) {
+                        // create
+                        viewModel.signUp()
+                    }
+                }
+                if (viewModel.signUpResult) {
+                    toLogIn()
                 }
             }
         }
-
-        composable("user_name") {
-            SignUpContainer {
-                SignUpUserNameScreen(
-                    userName = viewModel.userName,
-                    setUserName = { viewModel.userName = it },
-                ) {
-                    subNavController.navigate("password")
-                }
-            }
-        }
-
-        composable("password") {
-            SignUpContainer {
-                SignUpPasswordScreen(
-                    password = viewModel.password,
-                    setPassword = { viewModel.password = it }
-                ) {
-                    // create
-                    viewModel.signUp()
-                }
-            }
-            if (viewModel.signUpResult) {
-                toLogIn()
-            }
-        }
-
     }
 
     LaunchedEffect(true) {

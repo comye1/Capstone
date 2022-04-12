@@ -5,10 +5,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,8 +20,10 @@ import com.comye1.capstone.screens.signin.SignInScreen
 import com.comye1.capstone.screens.signup.SignUpScreen
 import com.comye1.capstone.ui.ExitDialog
 import com.comye1.capstone.ui.theme.CapstoneTheme
+import com.comye1.capstone.ui.theme.StatusBarColor
 import dagger.hilt.android.AndroidEntryPoint
 
+@ExperimentalMaterialApi
 @AndroidEntryPoint
 class SignActivity : ComponentActivity() {
 
@@ -31,65 +35,66 @@ class SignActivity : ComponentActivity() {
         mainIntent = Intent().setClass(applicationContext, MainActivity::class.java)
 
         setContent {
-            CapstoneTheme {
-                setContent {
-                    val (exitDialogShown, showExitDialog) = remember {
-                        mutableStateOf(false)
+
+            window.statusBarColor = StatusBarColor.toArgb()
+
+            setContent {
+                val (exitDialogShown, showExitDialog) = remember {
+                    mutableStateOf(false)
+                }
+
+                val navController = rememberNavController()
+
+                NavHost(
+                    navController = navController,
+                    startDestination = "splash"
+                ) {
+                    composable("splash") {
+                        SplashScreen {
+                            navController.navigate("sign_in") {
+                                popUpTo("splash") {
+                                    inclusive = true
+                                }
+                            }
+                        }
                     }
-
-                    val navController = rememberNavController()
-
-                    NavHost(
-                        navController = navController,
-                        startDestination = "splash"
-                    ) {
-                        composable("splash") {
-                            SplashScreen {
+                    composable("sign_in") {
+//                    requestForegroundPermission(this@MainActivity)
+                        SignInScreen(
+                            toMain = {
+                                startActivity(mainIntent)
+                            },
+                            toSignUp = {
+                                navController.navigate("sign_up")
+                            }
+                        )
+                    }
+                    composable("sign_up") {
+                        SignUpScreen(
+                            toLogIn = {
                                 navController.navigate("sign_in") {
-                                    popUpTo("splash") {
+                                    popUpTo("sign_up") {
                                         inclusive = true
                                     }
                                 }
                             }
-                        }
-                        composable("sign_in") {
-//                    requestForegroundPermission(this@MainActivity)
-                            SignInScreen(
-                                toMain = {
-                                    startActivity(mainIntent)
-                                },
-                                toSignUp = {
-                                    navController.navigate("sign_up")
-                                }
-                            )
-                        }
-                        composable("sign_up") {
-                            SignUpScreen(
-                                toLogIn = {
-                                    navController.navigate("sign_in") {
-                                        popUpTo("sign_up") {
-                                            inclusive = true
-                                        }
-                                    }
-                                }
-                            )
-                        }
+                        )
                     }
-                    /*
-                뒤로가기 동작 처리
+                }
+                /*
+            뒤로가기 동작 처리
+             */
+                BackHandler(
+                    onBack = {
+                        showExitDialog(true)
+                    }
+                )
+                /*
+                종료 다이얼로그
                  */
-                    BackHandler(
-                        onBack = {
-                            showExitDialog(true)
-                        }
-                    )
-                    /*
-                    종료 다이얼로그
-                     */
-                    if (exitDialogShown) {
-                        ExitDialog(onDismiss = { showExitDialog(false) }) {
-                            finishAffinity()
-                        }
+                if (exitDialogShown) {
+                    ExitDialog(onDismiss = { showExitDialog(false) }) {
+                        finishAffinity()
                     }
                 }
             }
