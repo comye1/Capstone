@@ -55,11 +55,13 @@ class MainActivity : ComponentActivity() {
             }
 
             CapstoneTheme {
-                Scaffold(bottomBar = {
-                    if (bottomBarShown) {
-                        BottomNavigationBar(navController = navController)
-                    }
-                }) { paddingValues ->
+                Scaffold(
+                    bottomBar = {
+                        if (bottomBarShown) {
+                            BottomNavigationBar(navController = navController)
+                        }
+                    },
+                ) { paddingValues ->
 
 
                     val scope = rememberCoroutineScope()
@@ -79,11 +81,18 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable(Screen.Feed.route) {
                                 showBottomBar(true)
-                                FeedScreen()
+                                FeedScreen(
+                                    toGoalDetail = { navController.navigate("goal_detail") },
+                                    toUserDetail = { navController.navigate("user_detail") }
+                                )
                             }
                             composable(Screen.Explore.route) {
                                 showBottomBar(true)
-                                Explore(paddingValues)
+                                Explore(
+                                    paddingValues = paddingValues,
+                                    toGoalDetail = { navController.navigate("goal_detail") },
+                                    toUserDetail = { navController.navigate("user_detail") }
+                                )
                             }
                             composable(Screen.List.route) {
                                 showBottomBar(true)
