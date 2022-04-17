@@ -37,7 +37,7 @@ data class PlayItem(
 @Composable
 fun PLDetailPreview() {
     GoalDetailScreen(playList = samplePlayList) {
-        
+
     }
 }
 
@@ -76,7 +76,7 @@ val samplePlayList = PlayList(
 
 @Composable
 fun GoalDetailScreen(playList: PlayList = samplePlayList, toBack: () -> Unit) {
-    Scaffold(topBar = {
+    Column(modifier = Modifier.padding(bottom = 96.dp)) {
         TopAppBar(
             title = { Text(text = "Goal Detail") },
             navigationIcon = {
@@ -89,8 +89,7 @@ fun GoalDetailScreen(playList: PlayList = samplePlayList, toBack: () -> Unit) {
                     Icon(imageVector = Icons.Outlined.Share, contentDescription = "share")
                 }
             })
-    }) {
-        Column(Modifier.padding(16.dp)) {
+        Column(Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
             //TitleSection
             Row(Modifier.fillMaxWidth()) {
                 Image(
@@ -109,7 +108,7 @@ fun GoalDetailScreen(playList: PlayList = samplePlayList, toBack: () -> Unit) {
                         fontWeight = FontWeight.ExtraBold,
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "소유자: ${playList.author}님", modifier = Modifier.clickable {  })
+                    Text(text = "소유자: ${playList.author}님", modifier = Modifier.clickable { })
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(text = "${playList.playItems.size}차시 과정")
                 }
@@ -125,15 +124,12 @@ fun GoalDetailScreen(playList: PlayList = samplePlayList, toBack: () -> Unit) {
             )
             Spacer(modifier = Modifier.height(8.dp))
             LazyColumn {
-                item{
+                item {
                     Spacer(modifier = Modifier.height(8.dp))
                 }
                 itemsIndexed(playList.playItems) { index, item ->
                     ListCard(index = index + 1, title = item.title, min = item.timeInMin)
                     Spacer(modifier = Modifier.height(8.dp))
-                }
-                item { 
-                    Spacer(modifier = Modifier.height(56.dp))
                 }
             }
         }
