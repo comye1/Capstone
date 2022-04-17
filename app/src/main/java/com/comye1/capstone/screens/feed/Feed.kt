@@ -2,6 +2,7 @@ package com.comye1.capstone.screens.feed
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -103,8 +104,12 @@ object FeedItems {
     )
 }
 
+@ExperimentalMaterialApi
 @Composable
-fun FeedScreen(paddingValues: PaddingValues) {
+fun FeedScreen(
+    toGoalDetail: () -> Unit,
+    toUserDetail: () -> Unit
+) {
 
     val likeList = remember {
         mutableStateListOf(
@@ -116,16 +121,14 @@ fun FeedScreen(paddingValues: PaddingValues) {
             Pair(5, true)
         )
     }
-
-    Scaffold(topBar = {
+    Column(modifier = Modifier.padding(bottom = 96.dp)) {
         TopAppBar(
             title = { Text("Feed") },
         )
-    }) {
         LazyColumn(
             Modifier
                 .fillMaxSize()
-                .padding(paddingValues = paddingValues)
+//                .padding(paddingValues = it)
         ) {
             itemsIndexed(FeedItems.list) { index, item ->
                 Divider(Modifier.height(8.dp))
@@ -144,21 +147,28 @@ fun FeedScreen(paddingValues: PaddingValues) {
                         }
                     },
                     commentCount = FeedItems.commentList[index],
-                    commentButtonClick = {}
+                    commentButtonClick = { },
+                    onGoalTitleClick = { toGoalDetail() },
+                    onPlanTitleClick = { toGoalDetail() },
+                    onUserNameClick = { toUserDetail() }
                 )
             }
             item {
                 Divider(Modifier.height(8.dp))
             }
         }
+
     }
 }
 
 @Composable
 fun FeedItem(
     item: FeedItemDataClass,
+    onGoalTitleClick: () -> Unit,
+    onPlanTitleClick: () -> Unit,
     likeCount: Int,
     userLike: Boolean,
+    onUserNameClick: () -> Unit,
     likeButtonClick: () -> Unit,
     commentCount: Int,
     commentButtonClick: () -> Unit,
@@ -183,9 +193,13 @@ fun FeedItem(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
-                    Text(text = item.userName)
+                    Text(text = item.userName, modifier = Modifier.clickable { onUserNameClick() })
 //                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = item.goal, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = item.goal,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.clickable { onGoalTitleClick() }
+                    )
                 }
 
             }
@@ -194,7 +208,10 @@ fun FeedItem(
             }
         }
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = item.title, style = MaterialTheme.typography.h6)
+        Text(
+            text = item.title,
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.clickable { onPlanTitleClick() })
         if (item.imgId != null) {
             Image(
                 painter = painterResource(id = item.imgId),
