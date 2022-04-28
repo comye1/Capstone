@@ -12,7 +12,7 @@
         <activity
             android:name=".SignActivity"
             android:exported="true"
-            android:label="SignActivity"
+            android:label="Capstone"
             android:theme="@style/Theme.Capstone.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -29,48 +29,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.comye1.capstone.R
-import com.comye1.capstone.screens.GoalDetailScreen
-import com.comye1.capstone.screens.samplePlayList
-
-enum class ExploreState {
-    Main,
-    Detail,
-    Search
-}
 
 @Composable
-fun Explore(paddingValues: PaddingValues) {
-
-    val (screenState, setScreenState) = remember {
-        mutableStateOf(ExploreState.Main)
-    }
-
+fun Explore(
+    paddingValues: PaddingValues,
+    toGoalDetail: () -> Unit,
+    toUserDetail: () -> Unit,
+    toSearch: () -> Unit
+) {
     val (clickedPlayList, setClickedPlayList) = remember {
         mutableStateOf(PlayListThumb(null, "", ""))
     }
 
-    when (screenState) {
-        ExploreState.Main -> {
-            ExploreMainScreen(
-                paddingValues = paddingValues,
-                toSearchScreen = { setScreenState(ExploreState.Search) },
-                onPlayListClicked = { playList ->
-                    setClickedPlayList(playList)
-                    setScreenState(ExploreState.Detail)
-                }
-            )
-        }
-//        ExploreState.Detail -> {
-////            ExploreDetailScreen()
-//            GoalDetailScreen(playList = samplePlayList) { setScreenState(ExploreState.Main) }
-//        }
-        ExploreState.Search -> {
-            ExploreSearchScreen {
-                setScreenState(ExploreState.Main)
-            }
-        }
-    }
-
+    ExploreMainScreen(
+        paddingValues = paddingValues,
+        toSearchScreen = toSearch,
+        onPlayListClicked = { playList ->
+//                    setClickedPlayList(playList)
+//                    setScreenState(ExploreState.Detail)
+            toGoalDetail()
+        },
+    )
 }
 
 @Composable
@@ -85,6 +64,7 @@ fun ExploreSearchScreen(toMainScreen: () -> Unit) {
     }
 
     Scaffold(
+        modifier = Modifier.padding(bottom = 96.dp),
         topBar = {
             SearchTopBar(
                 placeHolderText = "주제, 사용자, 플레이 리스트 이름 등 검색",
@@ -124,20 +104,19 @@ fun ExploreSearchScreen(toMainScreen: () -> Unit) {
 fun ExploreMainScreen(
     paddingValues: PaddingValues,
     onPlayListClicked: (PlayListThumb) -> Unit,
-    toSearchScreen: () -> Unit
+    toSearchScreen: () -> Unit,
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Explore") },
-                actions = {
-                    IconButton(onClick = toSearchScreen) {
-                        Icon(imageVector = Icons.Default.Search, contentDescription = "search icon")
-                    }
-                }
-            )
-        }
+    Column(
+        modifier = Modifier.padding(bottom = 96.dp),
     ) {
+        TopAppBar(
+            title = { Text("Explore") },
+            actions = {
+                IconButton(onClick = toSearchScreen) {
+                    Icon(imageVector = Icons.Default.Search, contentDescription = "search icon")
+                }
+            }
+        )
         LazyColumn(
             Modifier
                 .fillMaxWidth()
@@ -173,7 +152,7 @@ fun ExploreMainScreen(
                             author = "작성자"
                         ),
                     ),
-                    onPlayListClicked
+                    onItemClick = onPlayListClicked
                 )
 
             }

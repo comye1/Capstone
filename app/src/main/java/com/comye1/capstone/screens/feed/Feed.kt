@@ -211,7 +211,8 @@ fun FeedItem(
         Text(
             text = item.title,
             style = MaterialTheme.typography.h6,
-            modifier = Modifier.clickable { onPlanTitleClick() })
+            modifier = Modifier.clickable { onPlanTitleClick() }
+        )
         if (item.imgId != null) {
             Image(
                 painter = painterResource(id = item.imgId),

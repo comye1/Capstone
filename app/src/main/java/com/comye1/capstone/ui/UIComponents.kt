@@ -79,7 +79,7 @@ fun Modifier.simpleVerticalScrollbar(
             val elementHeight = this.size.height / (state.layoutInfo.totalItemsCount + 1)
             val scrollbarOffsetY = firstVisibleElementIndex * elementHeight
             val scrollbarHeight =
-                (state.layoutInfo.visibleItemsInfo.size + 1 ) * elementHeight
+                (state.layoutInfo.visibleItemsInfo.size + 1) * elementHeight
 
             drawRect(
                 color = Color.Black,

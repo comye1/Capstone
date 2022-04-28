@@ -1,4 +1,4 @@
-package com.comye1.capstone.screens
+package com.comye1.capstone.screens.goaldetail
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -78,7 +78,7 @@ val samplePlayList = PlayList(
 fun GoalDetailScreen(playList: PlayList = samplePlayList, toBack: () -> Unit) {
     Column(modifier = Modifier.padding(bottom = 96.dp)) {
         TopAppBar(
-            title = { Text(text = "Goal Detail") },
+            title = {},
             navigationIcon = {
                 IconButton(onClick = toBack) {
                     Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "back")

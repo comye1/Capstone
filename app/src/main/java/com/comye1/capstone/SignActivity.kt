@@ -21,8 +21,10 @@ import com.comye1.capstone.screens.signup.SignUpScreen
 import com.comye1.capstone.ui.ExitDialog
 import com.comye1.capstone.ui.theme.CapstoneTheme
 import com.comye1.capstone.ui.theme.StatusBarColor
+import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
 
+@ExperimentalPagerApi
 @ExperimentalMaterialApi
 @AndroidEntryPoint
 class SignActivity : ComponentActivity() {

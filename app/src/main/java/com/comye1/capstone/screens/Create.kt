@@ -24,6 +24,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.comye1.capstone.R
+import com.comye1.capstone.screens.goaldetail.ListCard
+import com.comye1.capstone.screens.goaldetail.PlayItem
+import com.comye1.capstone.screens.goaldetail.PlayList
 
 @Composable
 fun CreateScreen(

@@ -5,8 +5,13 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
-import androidx.compose.animation.*
-import androidx.compose.material.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Scaffold
+import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -17,10 +22,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.comye1.capstone.navigation.BottomNavigationBar
 import com.comye1.capstone.navigation.Screen
-import com.comye1.capstone.screens.GoalDetailScreen
 import com.comye1.capstone.screens.explore.Explore
 import com.comye1.capstone.screens.explore.ExploreSearchScreen
 import com.comye1.capstone.screens.feed.FeedScreen
+import com.comye1.capstone.screens.goaldetail.GoalDetailScreen
 import com.comye1.capstone.screens.list.ListScreen
 import com.comye1.capstone.screens.mygoal.MyGoalScreen
 import com.comye1.capstone.screens.player.PlayerBottomSheetContent
@@ -30,12 +35,16 @@ import com.comye1.capstone.screens.userdetail.UserDetailScreen
 import com.comye1.capstone.ui.ExitDialog
 import com.comye1.capstone.ui.theme.CapstoneTheme
 import com.comye1.capstone.ui.theme.StatusBarColor
+import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@ExperimentalPagerApi
 @ExperimentalMaterialApi
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -58,7 +67,11 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     bottomBar = {
                         // bottom bar visibility 애니메이션
-                        AnimatedVisibility(visible = bottomBarShown, enter = expandVertically(), exit = shrinkVertically()) {
+                        AnimatedVisibility(
+                            visible = bottomBarShown,
+                            enter = expandVertically(),
+                            exit = shrinkVertically()
+                        ) {
                             BottomNavigationBar(navController = navController)
                         }
                     },
@@ -110,14 +123,19 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("user_detail") {
                                 showBottomBar(false)
-                                UserDetailScreen(toBack = { }) {
-
-                                }
+                                UserDetailScreen(
+                                    toBack = {
+                                        navController.popBackStack()
+                                    },
+                                    toGoal = {
+                                        navController.navigate("goal_detail")
+                                    }
+                                )
                             }
                             composable("goal_Detail") {
                                 showBottomBar(false)
                                 GoalDetailScreen {
-
+                                    navController.popBackStack()
                                 }
                             }
                             composable("my_goal") {
