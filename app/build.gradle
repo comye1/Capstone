@@ -88,4 +88,6 @@ dependencies {
     implementation "com.google.accompanist:accompanist-pager:0.19.0"
     implementation "com.google.accompanist:accompanist-pager-indicators:0.19.0"
 
+    // Unsplash Images
+    implementation "com.github.unsplash:unsplash-photopicker-android:1.0.1"
 }

@@ -77,7 +77,6 @@ class MainActivity : ComponentActivity() {
                     },
                 ) { paddingValues ->
 
-
                     val scope = rememberCoroutineScope()
                     val scaffoldState = rememberBottomSheetScaffoldState()
 
