@@ -31,9 +31,9 @@ fun SignInScreen(
             ) {
                 Text(text = "환영합니다", style = MaterialTheme.typography.h4)
                 SignInFields(
-                    email = viewModel.email,
+                    id = viewModel.id,
                     password = viewModel.password,
-                    onEmailChange = { viewModel.email = it },
+                    onIdChange = { viewModel.id = it },
                     onPasswordChange = { viewModel.password = it }
                 )
                 OutlinedButton(
@@ -60,16 +60,16 @@ fun SignInScreen(
 
 @Composable
 fun SignInFields(
-    email: String,
+    id: String,
     password: String,
-    onEmailChange: (String) -> Unit,
+    onIdChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit
 ) {
     Spacer(modifier = Modifier.height(16.dp))
     OutlinedTextField(
-        value = email,
-        onValueChange = onEmailChange,
-        label = { Text(text = "이메일") },
+        value = id,
+        onValueChange = onIdChange,
+        label = { Text(text = "아이디") },
         modifier = Modifier.fillMaxWidth()
     )
     Spacer(modifier = Modifier.height(16.dp))
