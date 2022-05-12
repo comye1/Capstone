@@ -29,7 +29,7 @@ fun SignUpScreen(
         NavHost(navController = subNavController, startDestination = "email") {
             composable("email") {
                 SignUpContainer {
-                    SignUpEmailScreen(viewModel) {
+                    SignUpIdScreen(viewModel) {
                         // next
                         subNavController.navigate("user_name")
                     }

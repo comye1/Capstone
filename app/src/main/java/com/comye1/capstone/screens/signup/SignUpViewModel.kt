@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.comye1.capstone.network.Resource
 import com.comye1.capstone.repository.CapstoneRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -19,70 +20,60 @@ class SignUpViewModel @Inject constructor(
     private val repository: CapstoneRepository
 ) : ViewModel() {
 
+    val signUpResult by mutableStateOf(false)
+
     private val messageChannel = Channel<String>()
     val messageFlow = messageChannel.receiveAsFlow()
 
-    var email by mutableStateOf("")
+    var id by mutableStateOf("")
     var userName by mutableStateOf("")
     var password by mutableStateOf("")
 
-    var showVerifyButton by mutableStateOf(false) // 인증 버튼 활성화
 
-    var verificationRequested by mutableStateOf(false) // 인증 버튼이 눌림 -> 입력창 활성화
+    /**
+     * 다이얼로그 상태
+     */
+    var showIdChecker by mutableStateOf(false)
 
-    var verificationResult by mutableStateOf(false)
+    /**
+     * 아이디 중복 확인 여부
+     */
+    var idCheckState by mutableStateOf(false)
 
-    var verificationCode by mutableStateOf("")
-
-    fun requestEmailVerificationCode() {
+    /**
+     * 중복 확인 다이얼로그 열기
+     */
+    fun openIdChecker() {
         viewModelScope.launch {
-//            repository.requestEmailVerificationCode(email).also {
-//                when (it) {
-//                    is Resource.Success -> {
-                        verificationRequested = true
-//                        Log.d("signup 1", it.data?.message ?: "null")
-//                        messageChannel.send("Verification mail sent")
-//                    }
-//                    is Resource.Error -> {
-//                        verificationRequested = false
-//
-//                        Log.d("signup 1", it.data?.message ?: "null")
-//                        Log.d("signup 1", it.data?.error ?: "null")
-//                        messageChannel.send("Verification request failed")
-//                    }
-//                }
-//            }
+            idCheckState = false
+            repository.checkId(id).also {
+                when(it) {
+                    is Resource.Success -> {
+                        idCheckState = true
+                    }
+                    else -> {
+                        idCheckState = false
+                    }
+                }
+            }
+            showIdChecker = true
         }
     }
 
-    fun verifyEmailCode() {
-        viewModelScope.launch {
-//            repository.verifyEmailCode(email, verificationCode).also {
-//                when (it) {
-//                    is Resource.Success -> {
-                        verificationResult = true
-//                        messageChannel.send("Verification succeeded")
-//                        Log.d("signup 2", it.data?.message ?: "null")
-//                    }
-//                    is Resource.Error -> {
-//                        verificationResult = false
-//                        messageChannel.send("Verification failed")
-//                        Log.d("signup 2", it.data?.error ?: "null")
-//                    }
-//                }
-//            }
-        }
+    /**
+     * 중복 확인 다이얼로그 닫기
+     */
+    fun closeIdChecker() {
+        showIdChecker = false
     }
-
-    var signUpResult by mutableStateOf(false)
 
     fun signUp() {
 //        Log.d("signUp", "$email $password $userName")
-        viewModelScope.launch {
+//        viewModelScope.launch {
 //            repository.signUp(email = email, password = password, name = userName).also {
 //                when (it) {
 //                    is Resource.Success -> {
-                        signUpResult = true
+//                        signUpResult = true
 //                        messageChannel.send("Success")
 //                        Log.d("signup 2", it.data?.message ?: "null")
 //                    }
@@ -93,7 +84,8 @@ class SignUpViewModel @Inject constructor(
 //                    }
 //                }
 //            }
-        }
+//        }
     }
+
 
 }
