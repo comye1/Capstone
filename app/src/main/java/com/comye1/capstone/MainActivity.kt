@@ -108,7 +108,6 @@ class MainActivity : ComponentActivity() {
                                 Explore(
                                     paddingValues = paddingValues,
                                     toGoalDetail = { navController.navigate("goal_detail") },
-                                    toUserDetail = { navController.navigate("user_detail") },
                                     toSearch = { navController.navigate("search") }
                                 )
                             }
@@ -143,7 +142,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("search") {
                                 showBottomBar(false)
-                                ExploreSearchScreen {
+                                ExploreSearchScreen(
+                                    toGoalDetail = { navController.navigate("goal_detail") }
+                                ) {
                                     navController.popBackStack()
                                 }
                             }

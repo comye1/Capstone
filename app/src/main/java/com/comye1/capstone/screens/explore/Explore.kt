@@ -23,18 +23,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.comye1.capstone.R
+import com.comye1.capstone.network.Resource
 
 @Composable
 fun Explore(
     paddingValues: PaddingValues,
     toGoalDetail: () -> Unit,
-    toUserDetail: () -> Unit,
     toSearch: () -> Unit
 ) {
     val (clickedPlayList, setClickedPlayList) = remember {
@@ -53,52 +52,148 @@ fun Explore(
 }
 
 @Composable
-fun ExploreSearchScreen(toMainScreen: () -> Unit) {
-
-    val (queryString, setQueryString) = remember {
-        mutableStateOf("")
-    }
-
-    val (queryResult, setQueryResult) = remember {
-        mutableStateOf("")
-    }
+fun ExploreSearchScreen(
+    viewModel: ExploreSearchViewModel = hiltViewModel(),
+    toGoalDetail: () -> Unit,
+    toMainScreen: () -> Unit
+) {
 
     Scaffold(
         modifier = Modifier.padding(bottom = 96.dp),
         topBar = {
             SearchTopBar(
                 placeHolderText = "주제, 사용자, 플레이 리스트 이름 등 검색",
-                queryString = queryString,
-                setQueryString = setQueryString,
+                queryString = viewModel.word,
+                setQueryString = viewModel::setSearchWord,
                 onBackButtonClick = toMainScreen
             ) {
                 // onSearchKey
-                setQueryResult(queryString)
+                viewModel.getQueryResult()
             }
         }
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = buildAnnotatedString {
-                    val boldStyle = SpanStyle( // 부분적으로 적용할 Style 정의
-                        color = MaterialTheme.colors.primary,
-                        fontWeight = FontWeight.Bold
-                    )
-                    pushStyle(boldStyle)
-                    append(queryResult)
-                    pop()
-                    append(" 검색 결과")
+        when(viewModel.queryResult) {
+            is Resource.Success -> {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    LazyColumn(
+                        Modifier
+                            .fillMaxWidth()
+                    ) {
+                        item {
+                            PLList(
+                                title = "인기 플레이 리스트",
+                                listThumb = listOf(
+                                    PlayListThumb(
+                                        painterResource(id = R.drawable.toeic),
+                                        title = "토익 900 달성",
+                                        author = "김예원"
+                                    ),
+                                    PlayListThumb(
+                                        painterResource(id = R.drawable.sample),
+                                        title = "제목",
+                                        author = "작성자"
+                                    ),
+                                    PlayListThumb(
+                                        painterResource(id = R.drawable.sample),
+                                        title = "제목",
+                                        author = "작성자"
+                                    ),
+                                    PlayListThumb(
+                                        painterResource(id = R.drawable.sample),
+                                        title = "제목",
+                                        author = "작성자"
+                                    ),
+                                    PlayListThumb(
+                                        painterResource(id = R.drawable.sample),
+                                        title = "제목",
+                                        author = "작성자"
+                                    ),
+                                ),
+                            ) { playList ->
+//                    setClickedPlayList(playList)
+//                    setScreenState(ExploreState.Detail)
+                                toGoalDetail()
+                            }
+
+                        }
+                        item {
+                            PLList(
+                                title = "관심 주제 : 개발",
+                                listThumb = listOf(
+                                    PlayListThumb(
+                                        painterResource(id = R.drawable.sample),
+                                        title = "제목",
+                                        author = "작성자"
+                                    ),
+                                    PlayListThumb(
+                                        painterResource(id = R.drawable.sample),
+                                        title = "제목",
+                                        author = "작성자"
+                                    ),
+                                    PlayListThumb(
+                                        painterResource(id = R.drawable.sample),
+                                        title = "제목",
+                                        author = "작성자"
+                                    ),
+                                    PlayListThumb(
+                                        painterResource(id = R.drawable.sample),
+                                        title = "제목",
+                                        author = "작성자"
+                                    ),
+                                ),
+                            ) { playList ->
+//                    setClickedPlayList(playList)
+//                    setScreenState(ExploreState.Detail)
+                                toGoalDetail()
+                            }
+                        }
+                        item {
+                            PLList(
+                                title = "관심 주제 : 음악",
+                                listThumb = listOf(
+                                    PlayListThumb(
+                                        painterResource(id = R.drawable.sample),
+                                        title = "제목",
+                                        author = "작성자"
+                                    ),
+                                    PlayListThumb(
+                                        painterResource(id = R.drawable.sample),
+                                        title = "제목",
+                                        author = "작성자"
+                                    ),
+                                    PlayListThumb(
+                                        painterResource(id = R.drawable.sample),
+                                        title = "제목",
+                                        author = "작성자"
+                                    ),
+                                    PlayListThumb(
+                                        painterResource(id = R.drawable.sample),
+                                        title = "제목",
+                                        author = "작성자"
+                                    ),
+                                ),
+                            ) { playList ->
+//                    setClickedPlayList(playList)
+//                    setScreenState(ExploreState.Detail)
+                                toGoalDetail()
+                            }
+                        }
+                    }
                 }
-            )
+
+            }
+            is Resource.Failure -> {
+            }
+            is Resource.Loading -> {
+            }
         }
     }
 
 }
-
 
 @Composable
 fun ExploreMainScreen(
