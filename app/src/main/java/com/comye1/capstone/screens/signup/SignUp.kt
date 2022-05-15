@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -26,42 +27,55 @@ fun SignUpScreen(
     val context = LocalContext.current
 
     CapstoneTheme {
-        NavHost(navController = subNavController, startDestination = "email") {
-            composable("email") {
-                SignUpContainer {
-                    SignUpIdScreen(viewModel) {
-                        // next
-                        subNavController.navigate("user_name")
+        Box() {
+            NavHost(navController = subNavController, startDestination = "email") {
+                composable("email") {
+                    SignUpContainer {
+                        SignUpIdScreen(viewModel) {
+                            // next
+                            subNavController.navigate("user_name")
+                        }
+                    }
+                }
+
+                composable("user_name") {
+                    SignUpContainer {
+                        SignUpUserNameScreen(
+                            userName = viewModel.userName,
+                            setUserName = { viewModel.userName = it },
+                        ) {
+                            subNavController.navigate("password")
+                        }
+                    }
+                }
+
+                composable("password") {
+                    SignUpContainer {
+                        SignUpPasswordScreen(
+                            password = viewModel.password,
+                            setPassword = { viewModel.password = it }
+                        ) {
+                            // create
+                            viewModel.signUp()
+                        }
+                    }
+                    if (viewModel.signUpResult) {
+                        toLogIn()
                     }
                 }
             }
 
-            composable("user_name") {
-                SignUpContainer {
-                    SignUpUserNameScreen(
-                        userName = viewModel.userName,
-                        setUserName = { viewModel.userName = it },
-                    ) {
-                        subNavController.navigate("password")
-                    }
-                }
-            }
-
-            composable("password") {
-                SignUpContainer {
-                    SignUpPasswordScreen(
-                        password = viewModel.password,
-                        setPassword = { viewModel.password = it }
-                    ) {
-                        // create
-                        viewModel.signUp()
-                    }
-                }
-                if (viewModel.signUpResult) {
-                    toLogIn()
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(onClick = { toLogIn() }) {
+                    Text(text = "취소", style = MaterialTheme.typography.subtitle1)
                 }
             }
         }
+
+
     }
 
     LaunchedEffect(true) {
