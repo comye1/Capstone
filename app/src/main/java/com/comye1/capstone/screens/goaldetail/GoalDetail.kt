@@ -18,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.comye1.capstone.R
 
 data class PlayList(
@@ -30,52 +31,21 @@ data class PlayList(
 
 data class PlayItem(
     val title: String,
-    val timeInMin: Int
 )
 
 @Preview(showBackground = true)
 @Composable
 fun PLDetailPreview() {
-    GoalDetailScreen(playList = samplePlayList) {
+    GoalDetailScreen {
 
     }
 }
 
-val samplePlayList = PlayList(
-    imgId = R.drawable.toeic,
-    title = "토익 900 달성",
-    author = "김예원",
-    playItems = listOf(
-        PlayItem(
-            title = "PART5 2회분 풀기, 놓치고 있던 문법 정리하기", 100
-        ),
-        PlayItem(
-            title = "PART1 5회분 풀기, 나만의 메모습관 만들기 \n문법 복습하기", 120
-        ),
-        PlayItem(
-            "PART1 5회분 풀기, 나만의 메모습관 만들기 \n문법 복습하기", 120
-        ),
-        PlayItem(
-            "PART2 2회분 풀기, 의문사에 집중하기 \n들릴 때까지 반복", 100
-        ),
-        PlayItem(
-            "PART2 2회분 풀기, 의문사에 집중하기 \n들릴 때까지 반복", 100
-        ),
-        PlayItem(
-            "PART3 2회분 풀기, 필요한 정보 파악 & 메모하기", 110
-        ),
-        PlayItem(
-            "PART3 2회분 풀기, 필요한 정보 파악 & 메모하기", 110
-        )
-
-    ),
-    description = "영어의 기반이 생겼다고 느낄 때 기출문제집 공부를 시작했습니다. " +
-            "풀이법은 다른 사람이 가르쳐주는 것보다 본인에게 맞는 방법을 찾는 것이 " +
-            "중요합니다."
-)
-
 @Composable
-fun GoalDetailScreen(playList: PlayList = samplePlayList, toBack: () -> Unit) {
+fun GoalDetailScreen(
+    viewModel: GoalDetailViewModel = hiltViewModel(),
+    toBack: () -> Unit
+) {
     Column(modifier = Modifier.padding(bottom = 96.dp)) {
         TopAppBar(
             title = {},
@@ -93,7 +63,7 @@ fun GoalDetailScreen(playList: PlayList = samplePlayList, toBack: () -> Unit) {
             //TitleSection
             Row(Modifier.fillMaxWidth()) {
                 Image(
-                    painter = painterResource(id = playList.imgId!!),//R.drawable.toeic
+                    painter = painterResource(id = viewModel.playList.imgId!!),//R.drawable.toeic
                     contentDescription = "img",
                     modifier = Modifier
                         .weight(1f)
@@ -103,32 +73,54 @@ fun GoalDetailScreen(playList: PlayList = samplePlayList, toBack: () -> Unit) {
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = playList.title,
+                        text = viewModel.playList.title,
                         style = MaterialTheme.typography.h5,
                         fontWeight = FontWeight.ExtraBold,
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "소유자: ${playList.author}님", modifier = Modifier.clickable { })
+                    Text(text = "소유자: ${viewModel.playList.author}님", modifier = Modifier.clickable { })
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "${playList.playItems.size}차시 과정")
+                    Text(text = "${viewModel.playList.playItems.size}차시 과정")
                 }
 
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth()) {
-                Text("나의 리스트에 추가하기")
+            if (viewModel.added) {
+                Row(Modifier.fillMaxWidth()) {
+                    Button(
+                        enabled = false,
+                        onClick = { },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                            Text(text = "추가됨 √")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(onClick = { viewModel.deleteFromMyList() }) {
+                        Text(text = "삭제하기")
+                    }
+                }
+
+            }
+            else {
+                Button(
+                    onClick = { viewModel.addToMyList() },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("나의 리스트에 추가하기")
+                }
+
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = playList.description
+                text = viewModel.playList.description
             )
             Spacer(modifier = Modifier.height(8.dp))
             LazyColumn {
                 item {
                     Spacer(modifier = Modifier.height(8.dp))
                 }
-                itemsIndexed(playList.playItems) { index, item ->
-                    ListCard(index = index + 1, title = item.title, min = item.timeInMin)
+                itemsIndexed(viewModel.playList.playItems) { index, item ->
+                    ListCard(index = index + 1, title = item.title)
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
@@ -137,7 +129,7 @@ fun GoalDetailScreen(playList: PlayList = samplePlayList, toBack: () -> Unit) {
 }
 
 @Composable
-fun ListCard(index: Int, title: String, min: Int) {
+fun ListCard(index: Int, title: String) {
     Card(
         elevation = 5.dp,
         shape = RoundedCornerShape(5.dp),
@@ -161,10 +153,7 @@ fun ListCard(index: Int, title: String, min: Int) {
                     .width(1.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Column() {
-                Text(text = title)
-                Text(text = "소요 시간 : $min 분")
-            }
+            Text(text = title)
         }
     }
 }
