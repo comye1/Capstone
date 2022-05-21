@@ -20,7 +20,7 @@ class SignUpViewModel @Inject constructor(
     private val repository: CapstoneRepository
 ) : ViewModel() {
 
-    val signUpResult by mutableStateOf(false)
+    var signUpResult by mutableStateOf(false)
 
     private val messageChannel = Channel<String>()
     val messageFlow = messageChannel.receiveAsFlow()
@@ -46,12 +46,13 @@ class SignUpViewModel @Inject constructor(
     fun openIdChecker() {
         viewModelScope.launch {
             idCheckState = false
-            repository.checkId(id).also {
+            repository.idCheck(id).also {
                 when(it) {
                     is Resource.Success -> {
                         idCheckState = true
                     }
-                    else -> {
+                    is Resource.Failure -> {
+//                        messageChannel.send(it.message)
                         idCheckState = false
                     }
                 }
@@ -68,23 +69,23 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun signUp() {
-//        Log.d("signUp", "$email $password $userName")
-//        viewModelScope.launch {
-//            repository.signUp(email = email, password = password, name = userName).also {
-//                when (it) {
-//                    is Resource.Success -> {
-//                        signUpResult = true
-//                        messageChannel.send("Success")
-//                        Log.d("signup 2", it.data?.message ?: "null")
-//                    }
-//                    is Resource.Error -> {
-//                        signUpResult = false
-//                        messageChannel.send("Failed")
-//                        Log.d("signup 2", it.data?.error ?: "null")
-//                    }
-//                }
-//            }
-//        }
+        Log.d("signUp", "$id $password $userName")
+        viewModelScope.launch {
+            repository.signUpUser(id, password, userName).also {
+                when (it) {
+                    is Resource.Success -> {
+                        signUpResult = true
+                        messageChannel.send("Success")
+                        Log.d("signup 2", it.data.createdAt)
+                    }
+                    is Resource.Failure -> {
+                        signUpResult = false
+                        messageChannel.send("Failed")
+                        Log.d("signup 2", it.message)
+                    }
+                }
+            }
+        }
     }
 
 

@@ -1,17 +1,21 @@
 package com.comye1.capstone.screens.signin
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.comye1.capstone.ui.theme.CapstoneTheme
+import kotlinx.coroutines.flow.collect
 
 @Composable
 fun SignInScreen(
@@ -19,6 +23,7 @@ fun SignInScreen(
     toSignUp: () -> Unit,
     viewModel: SignInViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     CapstoneTheme {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -53,6 +58,11 @@ fun SignInScreen(
                     Text(text = "회원가입")
                 }
             }
+        }
+    }
+    LaunchedEffect(true) {
+        viewModel.messageFlow.collect { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
     }
 }
