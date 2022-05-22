@@ -54,5 +54,50 @@ interface CapstoneApi {
         @Path("id") id: Int,
     ): Response<FollowData>
 
+    @POST("api/goal")
+    suspend fun postGoal(
+        @HeaderMap header: Map<String, String>,
+        @Body body: GoalBody
+    ): Response<GoalData>
 
+    @GET("api/goal")
+    suspend fun getUserGoals(
+        @HeaderMap header: Map<String, String>,
+    ): Response<GoalData>
+
+    @PATCH("api/goal")
+    suspend fun editGoal(
+        @HeaderMap header: Map<String, String>,
+        @Body body: EditGoalBody
+    ): Response<String>
+
+    @GET("api/goal/{id}")
+    suspend fun getGoalById(
+        @HeaderMap header: Map<String, String>,
+        @Path("id") id: Int,
+    ): Response<GoalData>
+
+    @POST("api/plan")
+    suspend fun postPlan(
+        @HeaderMap header: Map<String, String>,
+        @Body body: PlanBody
+    ): Response<String> // 아직모름
+
+    @POST("api/plan")
+    suspend fun getUserPlans(
+        @HeaderMap header: Map<String, String>,
+    ): Response<List<PlanData>>
+
+    @PATCH("api/plan")
+    suspend fun editPlan(
+        @HeaderMap header: Map<String, String>,
+        @Body body: EditPlanBody
+    ): Response<List<Int>>
+
+    @GET("api/plan/{goal_id}/{plan_id}")
+    suspend fun getPlanById(
+        @HeaderMap header: Map<String, String>,
+        @Path("goal_id") goal_id: Int,
+        @Path("plan_id") plan_id: Int,
+    )
 }
