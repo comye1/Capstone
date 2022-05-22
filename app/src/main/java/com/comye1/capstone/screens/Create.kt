@@ -1,152 +1,311 @@
 package com.comye1.capstone.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement.Absolute.SpaceBetween
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.comye1.capstone.R
-import com.comye1.capstone.screens.goaldetail.ListCard
-import com.comye1.capstone.screens.goaldetail.PlayItem
-import com.comye1.capstone.screens.goaldetail.PlayList
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.comye1.capstone.network.Resource
 
+@ExperimentalMaterialApi
 @Composable
 fun CreateScreen(
-    playList: PlayList = PlayList(
-        title = "달성 중인 목표 샘플",
-        author = "윤희서",
-        description = "책을 꾸준히 읽자",
-        imgId = R.drawable.books,
-        playItems = listOf(
-            PlayItem("11월 1일 ~ 모비딕 제 12장 간추린 생애", 150),
-            PlayItem("11월 8일 ~ 모비딕 제 35장 돛대 꼭대기", 160),
-            PlayItem("11월 15일 ~ 모비딕 제 49장 하이에나", 130),
-        )
-    ),
+    viewModel: CreateViewModel = hiltViewModel(),
     toBack: () -> Unit = {}
 ) {
-    val createListCardDialog = remember { mutableStateOf(false) }
-    val (planText, setPlanText) = remember {
-        mutableStateOf("")
-    }
-    if (createListCardDialog.value) {
-        Dialog(onDismissRequest = { createListCardDialog.value = false }) {
-            Column(
 
-                Modifier
-                    .clip(RoundedCornerShape(size = 12.dp))
-                    .background(Color.White)
-                    .padding(16.dp)
-            ) {
-                Text(text = "${playList.playItems.size + 1} 차시 계획 작성하기")
-                Spacer(modifier = Modifier.height(16.dp))
-                TextField(
-                    value = planText,
-                    onValueChange = setPlanText,
-                    placeholder = { Text("계획 내용") },
-                    modifier = Modifier.height(300.dp)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Button(onClick = { createListCardDialog.value = false }) {
-                        Text("취소")
+    when (viewModel.playList) {
+        is Resource.Success -> {
+            (viewModel.playList as Resource.Success).data.let { playList ->
+
+                when {
+                    viewModel.showPlayItemEditor -> {
+
+                        Dialog(onDismissRequest = { viewModel.closePlayItemEditor() }) {
+                            Column(
+
+                                Modifier
+                                    .clip(RoundedCornerShape(size = 12.dp))
+                                    .background(Color.White)
+                                    .padding(16.dp)
+                            ) {
+                                if (viewModel.currentPlayItemPosition == -1)
+                                    Text(text = "${playList.playItems.size + 1} 차시 계획 작성하기")
+                                else
+                                    Text(text = "${viewModel.currentPlayItemPosition} 차시 계획 작성하기")
+                                Spacer(modifier = Modifier.height(16.dp))
+                                TextField(
+                                    value = viewModel.currentPlayItem,
+                                    onValueChange = viewModel::setPlayItemContent,
+                                    placeholder = { Text("계획 내용") },
+                                    modifier = Modifier.height(300.dp)
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Button(onClick = { viewModel.closePlayItemEditor() }) {
+                                        Text("취소")
+                                    }
+                                    Button(onClick = { viewModel.addPlayItem() }) {
+                                        Text("저장")
+                                    }
+                                }
+                            }
+                        }
                     }
-                    Button(onClick = { createListCardDialog.value = false }) {
-                        Text("저장")
+                    viewModel.showTitleEditor -> {
+
+                        Dialog(onDismissRequest = { viewModel.closeTitleEditor() }) {
+                            var title by remember {
+                                mutableStateOf(viewModel.currentTitle)
+                            }
+                            Column(
+
+                                Modifier
+                                    .clip(RoundedCornerShape(size = 12.dp))
+                                    .background(Color.White)
+                                    .padding(16.dp)
+                            ) {
+                                Text(text = "제목 수정하기")
+                                Spacer(modifier = Modifier.height(16.dp))
+                                TextField(
+                                    value = title,
+                                    onValueChange = { title = it },
+                                    placeholder = { Text("목표 제목") },
+                                    modifier = Modifier.height(150.dp),
+                                    trailingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.Clear,
+                                            contentDescription = "clear",
+                                            modifier = Modifier.clickable {
+                                                title = ""
+                                            })
+                                    }
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Button(onClick = { viewModel.closeTitleEditor() }) {
+                                        Text("취소")
+                                    }
+                                    Button(onClick = { viewModel.saveTitle(title) }) {
+                                        Text("저장")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    viewModel.showDescEditor -> {
+
+                        Dialog(onDismissRequest = { viewModel.closeDescEditor() }) {
+                            var desc by remember {
+                                mutableStateOf(viewModel.currentDesc)
+                            }
+                            Column(
+
+                                Modifier
+                                    .clip(RoundedCornerShape(size = 12.dp))
+                                    .background(Color.White)
+                                    .padding(16.dp)
+                            ) {
+                                Text(text = "설명 수정하기")
+                                Spacer(modifier = Modifier.height(16.dp))
+                                TextField(
+                                    value = desc,
+                                    onValueChange = { desc = it },
+                                    placeholder = { Text("설명") },
+                                    modifier = Modifier.height(150.dp),
+                                    trailingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.Clear,
+                                            contentDescription = "clear",
+                                            modifier = Modifier.clickable {
+                                                desc = ""
+                                            })
+                                    }
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Button(onClick = { viewModel.closeDescEditor() }) {
+                                        Text("취소")
+                                    }
+                                    Button(onClick = { viewModel.saveDesc(desc) }) {
+                                        Text("저장")
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
+
+                Scaffold(topBar = {
+                    TopAppBar(
+                        title = { },
+                        navigationIcon = {
+                            IconButton(onClick = toBack) {
+                                Icon(
+                                    imageVector = Icons.Outlined.ArrowBack,
+                                    contentDescription = "back"
+                                )
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = viewModel::savePlayList) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Check,
+                                    contentDescription = "save"
+                                )
+                            }
+                        })
+                }) {
+                    Column(Modifier.padding(16.dp)) {
+                        //TitleSection
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+//                                .border(
+//                                    border = BorderStroke(1.dp, MaterialTheme.colors.primary),
+//                                    RoundedCornerShape(5.dp)
+//                                )
+                                .clickable(onClick = viewModel::openTitleEditor)
+                                .padding(8.dp),
+                            verticalAlignment = CenterVertically
+                        ) {
+                            Text(
+                                text = viewModel.currentTitle,
+                                style = MaterialTheme.typography.h5,
+                                fontWeight = FontWeight.ExtraBold,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(imageVector = Icons.Default.Edit, contentDescription = "edit")
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        Divider()
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable(onClick = viewModel::openDropdownMenu)
+                                .padding(8.dp),
+                            verticalAlignment = CenterVertically,
+                            horizontalArrangement = SpaceBetween
+                        ) {
+                            Text(text = viewModel.selectedCategory)
+                            DropdownMenu(
+                                expanded = viewModel.showDropdownMenu,
+                                onDismissRequest = viewModel::closeDropdownMenu
+                            ) {
+                                DropdownMenuItem(onClick = { viewModel.setCategory("건강") }) {
+                                    Text(text = "건강")
+                                }
+                                DropdownMenuItem(onClick = { viewModel.setCategory("취미") }) {
+                                    Text(text = "취미")
+                                }
+                                DropdownMenuItem(onClick = { viewModel.setCategory("학습") }) {
+                                    Text(text = "학습")
+                                }
+                                DropdownMenuItem(onClick = { viewModel.setCategory("어학") }) {
+                                    Text(text = "어학")
+                                }
+                                DropdownMenuItem(onClick = { viewModel.setCategory("IT") }) {
+                                    Text(text = "IT")
+                                }
+                                DropdownMenuItem(onClick = { viewModel.setCategory("기타") }) {
+                                    Text(text = "기타")
+                                }
+                            }
+                            Icon(
+                                imageVector = if (viewModel.showDropdownMenu) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                                contentDescription = "dropdown",
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                        }
+
+                        Divider()
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+//                                .border(
+//                                    border = BorderStroke(0.5.dp, Color.Gray),
+//                                    RoundedCornerShape(5.dp)
+//                                )
+                                .clickable(onClick = viewModel::openDescEditor)
+                                .padding(8.dp),
+                            verticalAlignment = CenterVertically
+                        ) {
+                            Text(
+                                text = viewModel.currentDesc,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(imageVector = Icons.Default.Edit, contentDescription = "edit")
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        Divider()
+                        Text(
+                            text = "총 ${playList.playItems.size}차시 과정",
+                            modifier = Modifier.padding(8.dp)
+                        )
+                        LazyColumn {
+                            item {
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                            itemsIndexed(playList.playItems) { index, item ->
+                                ListEditCard(index = index + 1, title = item.title) {
+                                    viewModel.openPlayItemEditor(index)
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                            item {
+                                CreateListCard(
+                                    index = playList.playItems.size,
+                                    onClick = { viewModel.openPlayItemEditor(-1) })
+                            }
+                            item {
+                                Spacer(modifier = Modifier.height(56.dp))
+                            }
+                        }
+                    }
+                }
+
             }
+        }
+        is Resource.Loading -> {
+
+        }
+        is Resource.Failure -> {
+
         }
     }
 
-    Scaffold(topBar = {
-        TopAppBar(
-            title = { },
-            navigationIcon = {
-                IconButton(onClick = toBack) {
-                    Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "back")
-                }
-            },
-            actions = {
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(imageVector = Icons.Outlined.MoreVert, contentDescription = "share")
-                }
-            })
-    }) {
-        Column(Modifier.padding(16.dp)) {
-            //TitleSection
-            Row(Modifier.fillMaxWidth()) {
-                Image(
-                    painter = painterResource(id = playList.imgId!!),//R.drawable.toeic
-                    contentDescription = "img",
-                    modifier = Modifier
-                        .weight(1f)
-                        .aspectRatio(1f),
-                    contentScale = ContentScale.Crop
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = playList.title,
-                        style = MaterialTheme.typography.h5,
-                        fontWeight = FontWeight.ExtraBold,
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "소유자: ${playList.author}님")
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "${playList.playItems.size}차시 과정")
-                }
-
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-//            Button(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth()) {
-//                Text("나의 리스트에 추가하기")
-//            }
-//            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = playList.description
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            LazyColumn {
-                item {
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-                itemsIndexed(playList.playItems) { index, item ->
-                    ListCard(index = index + 1, title = item.title, min = item.timeInMin)
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-                item {
-                    CreateListCard(
-                        index = playList.playItems.size,
-                        onClick = { createListCardDialog.value = true })
-                }
-                item {
-                    Spacer(modifier = Modifier.height(56.dp))
-                }
-            }
-        }
-    }
 }
 
 @Composable
@@ -156,7 +315,7 @@ fun CreateListCard(index: Int, onClick: () -> Unit) {
         shape = RoundedCornerShape(5.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .clickable(onClick = onClick),
         backgroundColor = MaterialTheme.colors.primary
     ) {
         Row(
@@ -180,6 +339,40 @@ fun CreateListCard(index: Int, onClick: () -> Unit) {
             Column {
                 Text(text = "추가하기", style = MaterialTheme.typography.h6)
             }
+        }
+    }
+}
+
+@Composable
+fun ListEditCard(index: Int, title: String, onClick: () -> Unit) {
+    Card(
+        elevation = 5.dp,
+        shape = RoundedCornerShape(5.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(vertical = 8.dp)
+        ) {
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "$index 차시",
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Divider(
+                modifier = Modifier
+                    .height(50.dp)
+                    .width(1.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = title, modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.width(8.dp))
+            Icon(imageVector = Icons.Default.Edit, contentDescription = "edit")
+            Spacer(modifier = Modifier.width(16.dp))
         }
     }
 }
