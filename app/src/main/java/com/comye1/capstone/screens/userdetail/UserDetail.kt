@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.outlined.Comment
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -24,7 +25,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.comye1.capstone.R
+import com.comye1.capstone.network.models.FollowData
+import com.comye1.capstone.network.models.SignUpData
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
@@ -33,15 +37,32 @@ import kotlinx.coroutines.launch
 
 @ExperimentalPagerApi
 @Composable
-fun UserDetailScreen(toBack: () -> Unit, toGoal: () -> Unit) {
+fun UserDetailScreen(
+    userId: Int,
+    toBack: () -> Unit,
+    toGoal: () -> Unit,
+    viewModel: UserDetailViewModel = hiltViewModel()
+) {
     /*
      앱바 등을 어떻게 할지가 고민이다.
-
      */
+    val user = produceState<SignUpData>(
+        initialValue = SignUpData(-1, "", "", "")
+    ) {
+        value = viewModel.getUserInfo(userId)
+    }.value
+
+    val followerList = produceState<List<FollowData>>(initialValue = listOf()) {
+        value = viewModel.getFollowerList(userId)
+    }.value
+
+    val followingList = produceState<List<FollowData>>(initialValue = listOf()) {
+        value = viewModel.getFollowingList(userId)
+    }.value
 
     Column(Modifier.fillMaxSize()) {
         TopAppBar(
-            title = { Text(text = "{사용자 이름}") },
+            title = { Text(text = user.nickname) },
             navigationIcon = {
                 IconButton(onClick = { toBack() }) {
                     Icon(
@@ -56,7 +77,14 @@ fun UserDetailScreen(toBack: () -> Unit, toGoal: () -> Unit) {
                 .fillMaxSize()
                 .padding(top = 16.dp, bottom = 96.dp, start = 16.dp, end = 16.dp)
         ) {
-            UserProfile(userName = "사용자이름")
+            UserProfile(
+                userName = "사용자이름",
+                isFollowing = followingList.any { it.User == viewModel.thisUser },
+                followerNum = followerList.size,
+                followingNum = followingList.size,
+                follow = { viewModel.followUser(userId) },
+                unFollow = { viewModel.unfollowUser(userId) }
+            )
             Spacer(modifier = Modifier.height(16.dp))
             UserDetailPager()
         }
@@ -246,6 +274,11 @@ fun FeedListItem() {
 fun UserProfile(
     profileImage: Painter = painterResource(id = R.drawable.sample),
     userName: String,
+    followerNum: Int,
+    followingNum: Int,
+    isFollowing: Boolean,
+    follow: () -> Unit,
+    unFollow: () -> Unit,
     logIn: () -> Unit = {},
     logOut: () -> Unit = {}
 ) {
@@ -261,7 +294,8 @@ fun UserProfile(
             Image(
                 painter = profileImage,
                 modifier = Modifier
-                    .fillMaxSize()
+                    .weight(1f)
+                    .aspectRatio(1f)
                     .clip(CircleShape),
                 contentDescription = "profile image"
             )
@@ -276,24 +310,24 @@ fun UserProfile(
                 .weight(1f)
         ) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                NumberTextColumn(number = 123, text = "팔로워") {
+                NumberTextColumn(number = followerNum, text = "팔로워") {
                     // modal dialog
                 }
 //                Spacer(modifier = Modifier.width(32.dp))
-                NumberTextColumn(number = 1452, text = "팔로잉") {
+                NumberTextColumn(number = followingNum, text = "팔로잉") {
                     // modal dialog
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
             TextButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = {},
+                onClick = if (isFollowing) unFollow else follow,
                 colors = ButtonDefaults.textButtonColors(
                     backgroundColor = MaterialTheme.colors.primary,
                     contentColor = Color.White
                 )
             ) {
-                Text(text = "팔로우") // or 팔로잉
+                Text(text = if (isFollowing) "언팔로우" else "팔로우") // or 팔로잉
             }
         }
     }
