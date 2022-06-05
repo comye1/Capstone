@@ -12,9 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -80,14 +78,6 @@ object FeedItems {
         ),
     )
 
-    //    val likeList = mutableListOf(
-//        Pair(0, false),
-//        Pair(2, true),
-//        Pair(11, true),
-//        Pair(3, false),
-//        Pair(1, false),
-//        Pair(5, true)
-//    )
 }
 
 @ExperimentalMaterialApi
@@ -97,7 +87,9 @@ fun FeedScreen(
     toGoalDetail: (Int) -> Unit,
     toUserDetail: (Int) -> Unit
 ) {
-
+    val user by remember {
+        mutableStateOf(viewModel.user)
+    }
     val likeList = remember {
         mutableStateListOf(
             Pair(0, false),
@@ -118,24 +110,21 @@ fun FeedScreen(
 //                .padding(paddingValues = it)
         ) {
             itemsIndexed(viewModel.feedItemList) { index, item ->
+                val userLike = item.like.any { it.user_id == user.id }
                 Divider(Modifier.height(8.dp))
                 FeedItem(
                     item,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    likeCount = likeList[index].first,
-                    userLike = likeList[index].second,
+                    likeCount = item.like.size,
+                    userLike = userLike,
                     likeButtonClick = {
-                        if (likeList[index].second) { // 하트 해제
-                            likeList[index] =
-                                Pair(likeList[index].first - 1, !likeList[index].second)
-                        } else {
-                            likeList[index] =
-                                Pair(likeList[index].first + 1, !likeList[index].second)
-                        }
+                        viewModel.likePlan(item.goal_id, item.plan_id, index)
                     },
-                    onGoalTitleClick = { toGoalDetail(0) },
-                    onPlanTitleClick = { toGoalDetail(0) },
-                    onUserNameClick = { toUserDetail(0) }
+                    onGoalTitleClick = { toGoalDetail(item.goal_id) },
+                    onPlanTitleClick = { toGoalDetail(item.goal_id) },
+                    onUserNameClick = {
+//                        toUserDetail(item.userName)
+                    }
                 )
             }
             item {
@@ -186,9 +175,6 @@ fun FeedItem(
                 }
 
             }
-            Row {
-//                Text(text = item.date, color = Color.Gray, fontSize = 12.sp)
-            }
         }
         Spacer(modifier = Modifier.height(4.dp))
         Text(
@@ -199,7 +185,7 @@ fun FeedItem(
         Spacer(modifier = Modifier.height(4.dp))
         Text(text = item.description, style = MaterialTheme.typography.subtitle1)
         Row {
-            IconButton(onClick = { likeButtonClick() }) {
+            IconButton(onClick = { if(!userLike) likeButtonClick() }) {
                 Row {
                     if (userLike) {
                         Icon(imageVector = Icons.Default.Favorite, contentDescription = "like this")

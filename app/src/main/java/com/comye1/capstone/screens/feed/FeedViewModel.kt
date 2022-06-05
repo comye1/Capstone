@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.comye1.capstone.network.Resource
 import com.comye1.capstone.network.models.FeedData
 import com.comye1.capstone.network.models.LikeData
+import com.comye1.capstone.network.models.PlanData
 import com.comye1.capstone.repository.CapstoneRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -20,6 +21,8 @@ class FeedViewModel @Inject constructor(
     // 게시글 목록 불러오기
     // 좋아요 목록 불러오기?
     // 좋아요하기
+
+    val user = repository.user
 
     var feedList by mutableStateOf<List<FeedData>>(listOf())
 
@@ -57,6 +60,13 @@ class FeedViewModel @Inject constructor(
                 if (like is Resource.Success)
                     it.copy(like = like.data)
             }
+        }
+    }
+
+    fun likePlan(goalId: Int, planId: Int, index: Int){
+        viewModelScope.launch {
+            repository.likePlan(goalId, planId)
+            getLikeList()
         }
     }
 

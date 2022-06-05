@@ -127,6 +127,7 @@ data class LikeListResponse(
 
 data class LikeData(
     val id: Int = -111111,
+    val user_id: Int = -11111,
     val plan_id: Int = -11111,
     val createdAt: String = "",
     val updatedAt: String = ""

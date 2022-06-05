@@ -28,7 +28,7 @@ object AppModule {
     fun provideCapstoneApi(): CapstoneApi {
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("https://www.naver.com")
+            .baseUrl("http://3.218.116.118:5000/")
             .build()
             .create(CapstoneApi::class.java)
     }
