@@ -5,6 +5,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -19,12 +21,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun ListScreen(paddingValues: PaddingValues) {
-
-    val (filterIndex, setFilterIndex) = remember {
-        mutableStateOf(0)
+fun ListScreen(
+    paddingValues: PaddingValues,
+    viewModel: ListViewModel = hiltViewModel(),
+    toMyGoal: (Int) -> Unit,
+    toCreateScreen: () -> Unit
+) {
+    val categoryList = listOf(
+        "전체",
+        "건강",
+        "취미",
+        "학습",
+        "어학",
+        "IT",
+        "기타"
+    )
+    val (filter, setFilter) = remember {
+        mutableStateOf(categoryList[0])
     }
 
     Scaffold(
@@ -34,7 +50,9 @@ fun ListScreen(paddingValues: PaddingValues) {
                     Text("List")
                 },
                 actions = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = {
+                        toCreateScreen()
+                    }) {
                         Icon(imageVector = Icons.Default.NoteAdd, contentDescription = "add")
                     }
                 }
@@ -46,53 +64,39 @@ fun ListScreen(paddingValues: PaddingValues) {
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            FilterSection(selectedFilterIndex = filterIndex, setIndex = setFilterIndex)
+            FilterSection(categoryList, selectedFilter = filter, setFilter = setFilter)
             Spacer(modifier = Modifier.height(16.dp))
             LazyColumn (
                 Modifier
                     .fillMaxSize()
                     .padding(paddingValues)){
-                item{
-                    MyGoalItem(
-                        goal = "매일매일 코어운동",
-                        prevTitle = "플랭크 40초 스쿼트 40회 런지 40회",
-                        nextTitle = "플랭크 45초 스쿼트 45회 런지 45회",
-                        onClick = {
-//                    navController.navigate(Screen.Create.route)
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
+                if (filter == "전체") {
+                    items(viewModel.userGoals){
+                        MyGoalItem(
+                            goal = it.goal_title,
+                            prevTitle = it.Plan.last { plan -> plan.is_checked }.plan_title ?: "",
+                            nextTitle = it.Plan.first { plan -> !plan.is_checked }.plan_title ?: "",
+                            onClick = {
+                                toMyGoal(it.id)
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                    }
                 }
-                item {
-                    MyGoalItem(goal = "안드로이드 기본지식",
-                        prevTitle = "View Lifecycle",
-                        nextTitle = "ViewModel",
-                        onClick = {
-//                    navController.navigate(Screen.Create.route)
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-                item {
-                    MyGoalItem(
-                        goal = "쇼팽 친해지기",
-                        prevTitle = "영웅 폴로네이즈",
-                        nextTitle = "환상 폴로네이즈",
-                        onClick = {
-//                    navController.navigate(Screen.Create.route)
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-                item {
-                    MyGoalItem(
-                        goal = "정보처리기사 필기",
-                        prevTitle = "소프트웨어 설계 - 요구사항 확인",
-                        nextTitle = "아직 작성되지 않았습니다.",
-                        onClick = {
-//                    navController.navigate(Screen.Create.route)
-                        }
-                    )
+                else {
+                    items(viewModel.userGoals.filter { it.board_category == filter }){
+                        MyGoalItem(
+                            goal = it.goal_title,
+                            prevTitle = it.Plan.last { plan -> plan.is_checked }.plan_title ?: "",
+                            nextTitle = it.Plan.first { plan -> !plan.is_checked }.plan_title ?: "",
+                            onClick = {
+                                toMyGoal(it.id)
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                    }
                 }
             }
 
@@ -158,15 +162,12 @@ fun MyGoalItem(goal: String, prevTitle: String, nextTitle: String, onClick: () -
 }
 
 @Composable
-fun FilterSection(selectedFilterIndex: Int, setIndex: (Int) -> Unit) {
-    Row {
-        FilterText("전체", selectedFilterIndex == 0) { setIndex(0) }
-        Spacer(modifier = Modifier.width(8.dp))
-        FilterText("개발자 되기", selectedFilterIndex == 1) { setIndex(1) }
-        Spacer(modifier = Modifier.width(8.dp))
-        FilterText("건강", selectedFilterIndex == 2) { setIndex(2) }
-        Spacer(modifier = Modifier.width(8.dp))
-        FilterText("클래식", selectedFilterIndex == 3) { setIndex(3) }
+fun FilterSection(list: List<String>, selectedFilter: String, setFilter: (String) -> Unit) {
+    LazyRow {
+        items(list) {
+            FilterText(it, selectedFilter == it) { setFilter(it) }
+            Spacer(modifier = Modifier.width(8.dp))
+        }
     }
 }
 

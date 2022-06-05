@@ -1,4 +1,4 @@
-package com.comye1.capstone.screens
+package com.comye1.capstone.screens.create
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -52,22 +52,6 @@ class CreateViewModel @Inject constructor(
         closeTitleEditor()
     }
 
-    var currentDesc by mutableStateOf("설명을 입력해주세요.")
-    var showDescEditor by mutableStateOf(false)
-
-    fun openDescEditor() {
-        showDescEditor = true
-    }
-
-    fun closeDescEditor() {
-        showDescEditor = false
-    }
-
-    fun saveDesc(newDesc: String) {
-        currentDesc = newDesc
-        closeDescEditor()
-    }
-
     var currentPlayItem by mutableStateOf("")
     var currentPlayItemPosition by mutableStateOf(-1)
 
@@ -97,7 +81,7 @@ class CreateViewModel @Inject constructor(
 //    }
 
     fun addPlayItem() {
-        (playList as Resource.Success).data.playItems.add(PlayItem(currentPlayItem))
+        (playList as Resource.Success).data.playItems.add(PlayItem(currentPlayItem, ""))
         closePlayItemEditor()
     }
 
@@ -110,7 +94,6 @@ class CreateViewModel @Inject constructor(
         val newList = PlayList(
             title = "사용자 님의 새로운 목표",
             author = "사용자",
-            description = "설명",
             imgId = R.drawable.books,
             playItems = mutableListOf()
         )
@@ -118,12 +101,11 @@ class CreateViewModel @Inject constructor(
         val sampleList = PlayList(
             title = "달성 중인 목표 샘플",
             author = "윤희서",
-            description = "책을 꾸준히 읽자",
             imgId = R.drawable.books,
             playItems = listOf(
-                PlayItem("11월 1일 ~ 모비딕 제 12장 간추린 생애"),
-                PlayItem("11월 8일 ~ 모비딕 제 35장 돛대 꼭대기"),
-                PlayItem("11월 15일 ~ 모비딕 제 49장 하이에나"),
+                PlayItem("11월 1일 ~ 모비딕 제 12장 간추린 생애", "흥미진진"),
+                PlayItem("11월 8일 ~ 모비딕 제 35장 돛대 꼭대기", "너무 재미있다"),
+                PlayItem("11월 15일 ~ 모비딕 제 49장 하이에나", "목표 분량까지 읽는 게 쉽지 않았지만 해냈다!"),
             ) as MutableList<PlayItem>
         )
     }

@@ -1,5 +1,7 @@
 package com.comye1.capstone.network.models
 
+import com.comye1.capstone.navigation.Screen
+
 data class BooleanResponse(
     val success: Boolean,
     val message: String = "",
@@ -82,7 +84,7 @@ data class GoalData(
     val user_id: String = "",
     val goal_title: String = "",
     val board_category: String = "",
-    val Plan: PlanData = PlanData()
+    val Plan: List<PlanData> = listOf()
 )
 
 data class PlanResponse(
@@ -102,9 +104,9 @@ data class PlanListResponse(
 data class PlanData(
     val id: Int = -1111111,
     val goal_id: Int = -111111,
-    val plan_title: String = "",
-    val is_checked: Boolean = false,
-    val content: String = "",
+    var plan_title: String = "",
+    var is_checked: Boolean = false,
+    var content: String = "",
     val createdAt: String = "",
     val updatedAt: String = "",
 )
@@ -130,9 +132,31 @@ data class LikeData(
     val updatedAt: String = ""
 )
 
-data class PlanIntListRespone(
+data class PlanIntListResponse(
     val success: Boolean,
     val message: String = "",
     val error: String = "",
     val data: List<Int> = listOf()
+)
+
+data class FeedData(
+    val id: Int = -111111,
+    val user_id: Int = -11111,
+    val goal_title: String = "",
+    val board_category: String = "",
+    val copied_from: Int = -11111,
+    val plan_id: Int = -11111,
+    val createdAt: String = "",
+    val updatedAt: String = "",
+    val goal_id: Int = -11111,
+    val plan_title: String = "",
+    val is_checked: Boolean = false,
+    val content: String = ""
+)
+
+data class FeedListResponse(
+    val success: Boolean,
+    val message: String = "",
+    val error: String = "",
+    val data: List<FeedData> = listOf()
 )

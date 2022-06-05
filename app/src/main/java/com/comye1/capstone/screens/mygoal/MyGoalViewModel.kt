@@ -1,4 +1,4 @@
-package com.comye1.capstone.screens.goaldetail
+package com.comye1.capstone.screens.mygoal
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,10 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.comye1.capstone.R
 import com.comye1.capstone.network.Resource
-import com.comye1.capstone.network.models.GoalBody
+import com.comye1.capstone.network.models.EditPlanBody
 import com.comye1.capstone.network.models.GoalData
-import com.comye1.capstone.network.models.PlanBody
+import com.comye1.capstone.network.models.PlanData
 import com.comye1.capstone.repository.CapstoneRepository
+import com.comye1.capstone.screens.goaldetail.GoalDetailMessage
+import com.comye1.capstone.screens.goaldetail.PlayItem
+import com.comye1.capstone.screens.goaldetail.PlayList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -18,46 +21,70 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class GoalDetailViewModel @Inject constructor(
+class MyGoalViewModel @Inject constructor(
     private val repository: CapstoneRepository
 ) : ViewModel() {
-    var playList by mutableStateOf(samplePlayList)
+    var currentGoal by mutableStateOf(GoalData())
+    var currentPlan by mutableStateOf(PlanData())
+
+    var seekingGoal by mutableStateOf(GoalData())
+    var seekingPlan by mutableStateOf(PlanData())
 
     var added by mutableStateOf(false)
 
-    fun addToMyList(goal: GoalData) {
-        viewModelScope.launch {
+    fun startPlan(goal: GoalData, index: Int) {
+        currentPlan = goal.Plan[index]
+        currentGoal = goal
+    }
 
-            val res =
-                repository.postGoal(GoalBody(goal.goal_title, board_category = goal.board_category))
-            if (res is Resource.Success) {
-                goal.Plan.forEach {
-                    repository.postPlan(
-                        PlanBody(
-                            goal_id = res.data.id,
-                            plan_title = it.plan_title,
-                            ""
-                        )
-                    )
-                }
-                added = true
-            }
-        }
+    fun startSeekingPlan() {
+        currentPlan = seekingPlan
+        currentGoal = seekingGoal
+    }
+
+    fun seekPlan(goal: GoalData, index: Int) {
+        seekingPlan = goal.Plan[index]
+        seekingGoal = goal
     }
 
     fun deleteFromMyList() {
         added = false
     }
 
+    fun movePlan() {
+        currentPlan = try {
+            currentGoal.Plan.first {
+                !it.is_checked
+            }
+        }catch (e: Exception) {
+            currentGoal = GoalData()
+            PlanData()
+        }
+    }
+
     private val messageChannel = Channel<GoalDetailMessage>()
     val messageFlow = messageChannel.receiveAsFlow()
 
-
-    fun navigateToMyList() {
+    fun completePlan(plan: PlanData, content: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
-            messageChannel.send(GoalDetailMessage.NavigateToMyList("1"))
+            repository.editPlan(
+                EditPlanBody(
+                    id = plan.id,
+                    goal_id = plan.goal_id,
+                    content = content,
+                    plan_title = plan.plan_title
+                )
+            ).run {
+                if (this is Resource.Success) {
+                    repository.completePlan(plan.goal_id, plan.id).run {
+                        if (this is Resource.Success)
+                            onSuccess()
+                    }
+                }
+            }
         }
     }
+
 
     suspend fun getGoalById(id: Int) =
         repository.getGoalById(id)
@@ -102,9 +129,4 @@ class GoalDetailViewModel @Inject constructor(
         )
 
     }
-}
-
-sealed class GoalDetailMessage {
-    class NavigateToMyList(val route: String) : GoalDetailMessage()
-
 }

@@ -54,7 +54,7 @@ fun Explore(
 @Composable
 fun ExploreSearchScreen(
     viewModel: ExploreSearchViewModel = hiltViewModel(),
-    toGoalDetail: () -> Unit,
+    toGoalDetail: (Int) -> Unit,
     toMainScreen: () -> Unit
 ) {
 
@@ -72,7 +72,7 @@ fun ExploreSearchScreen(
             }
         }
     ) {
-        when(viewModel.queryResult) {
+        when (viewModel.queryResult) {
             is Resource.Success -> {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -116,7 +116,7 @@ fun ExploreSearchScreen(
                             ) { playList ->
 //                    setClickedPlayList(playList)
 //                    setScreenState(ExploreState.Detail)
-                                toGoalDetail()
+                                toGoalDetail(-1)
                             }
 
                         }
@@ -148,7 +148,7 @@ fun ExploreSearchScreen(
                             ) { playList ->
 //                    setClickedPlayList(playList)
 //                    setScreenState(ExploreState.Detail)
-                                toGoalDetail()
+                                toGoalDetail(-1)
                             }
                         }
                         item {
@@ -179,7 +179,7 @@ fun ExploreSearchScreen(
                             ) { playList ->
 //                    setClickedPlayList(playList)
 //                    setScreenState(ExploreState.Detail)
-                                toGoalDetail()
+                                toGoalDetail(-1)
                             }
                         }
                     }
@@ -219,7 +219,7 @@ fun ExploreMainScreen(
         ) {
             item {
                 PLList(
-                    title = "인기 플레이 리스트",
+                    title = "관심 주제 : 어학",
                     listThumb = listOf(
                         PlayListThumb(
                             painterResource(id = R.drawable.toeic),
@@ -227,24 +227,14 @@ fun ExploreMainScreen(
                             author = "김예원"
                         ),
                         PlayListThumb(
-                            painterResource(id = R.drawable.sample),
-                            title = "제목",
-                            author = "작성자"
+                            painterResource(id = R.drawable.toeic),
+                            title = "독일어 100일",
+                            author = "지민"
                         ),
                         PlayListThumb(
-                            painterResource(id = R.drawable.sample),
-                            title = "제목",
-                            author = "작성자"
-                        ),
-                        PlayListThumb(
-                            painterResource(id = R.drawable.sample),
-                            title = "제목",
-                            author = "작성자"
-                        ),
-                        PlayListThumb(
-                            painterResource(id = R.drawable.sample),
-                            title = "제목",
-                            author = "작성자"
+                            painterResource(id = R.drawable.toeic),
+                            title = "HSK 6급따자",
+                            author = "수빈"
                         ),
                     ),
                     onItemClick = onPlayListClicked
@@ -252,60 +242,41 @@ fun ExploreMainScreen(
 
             }
             item {
-                PLList(
-                    title = "관심 주제 : 개발",
-                    listThumb = listOf(
-                        PlayListThumb(
-                            painterResource(id = R.drawable.sample),
-                            title = "제목",
-                            author = "작성자"
-                        ),
-                        PlayListThumb(
-                            painterResource(id = R.drawable.sample),
-                            title = "제목",
-                            author = "작성자"
-                        ),
-                        PlayListThumb(
-                            painterResource(id = R.drawable.sample),
-                            title = "제목",
-                            author = "작성자"
-                        ),
-                        PlayListThumb(
-                            painterResource(id = R.drawable.sample),
-                            title = "제목",
-                            author = "작성자"
-                        ),
-                    ),
-                    onPlayListClicked
-                )
+//                PLList(
+//                    title = "팔로잉하는 사람들의 목표",
+//                    listThumb = listOf(
+//                        PlayListThumb(
+//                            painterResource(id = R.drawable.toeic),
+//                            title = "제목",
+//                            author = "작성자"
+//                        ),
+//                        PlayListThumb(
+//                            painterResource(id = R.drawable.toeic),
+//                            title = "제목",
+//                            author = "작성자"
+//                        ),
+//                        PlayListThumb(
+//                            painterResource(id = R.drawable.toeic),
+//                            title = "제목",
+//                            author = "작성자"
+//                        ),
+//                    ),
+//                    onPlayListClicked
+//                )
             }
             item {
-                PLList(
-                    title = "관심 주제 : 음악",
-                    listThumb = listOf(
-                        PlayListThumb(
-                            painterResource(id = R.drawable.sample),
-                            title = "제목",
-                            author = "작성자"
-                        ),
-                        PlayListThumb(
-                            painterResource(id = R.drawable.sample),
-                            title = "제목",
-                            author = "작성자"
-                        ),
-                        PlayListThumb(
-                            painterResource(id = R.drawable.sample),
-                            title = "제목",
-                            author = "작성자"
-                        ),
-                        PlayListThumb(
-                            painterResource(id = R.drawable.sample),
-                            title = "제목",
-                            author = "작성자"
-                        ),
-                    ),
-                    onPlayListClicked
-                )
+//                PLList(
+//                    title = "관심 주제 : 음악",
+//                    listThumb = listOf(
+//                        PlayListThumb(
+//                            painterResource(id = R.drawable.toeic),
+//                            title = "제목",
+//                            author = "작성자"
+//                        ),
+//
+//                    ),
+//                    onPlayListClicked
+//                )
             }
         }
     }

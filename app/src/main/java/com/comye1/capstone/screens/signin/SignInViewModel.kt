@@ -33,7 +33,6 @@ class SignInViewModel @Inject constructor(
                 repository.signInUser(id, password).also {
                     when (it) {
                         is Resource.Success -> {
-                            Log.d("signup 2", it.data)
                             onComplete()
                         }
                         is Resource.Failure -> {

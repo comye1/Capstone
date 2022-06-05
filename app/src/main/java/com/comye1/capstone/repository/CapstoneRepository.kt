@@ -20,14 +20,14 @@ class CapstoneRepository @Inject constructor(
         Context.MODE_PRIVATE
     )
 
-    private fun saveCategory(category: String) {
+    fun saveCategory(category: String) {
         categorySharedPref.edit {
             putString("CATEGORY", category)
             commit()
         }
     }
 
-    private fun getSavedCategory(): String? = categorySharedPref.getString("CATEGORY", null)
+    fun getSavedCategory(): String? = categorySharedPref.getString("CATEGORY", null)
 
 
     private val tokenSharedPref: SharedPreferences = context.getSharedPreferences(
@@ -105,10 +105,23 @@ class CapstoneRepository @Inject constructor(
     }
 
 
-    suspend fun getUserById(id: Int): Resource<SignUpData> {
+    suspend fun getUserById(id: Int): SignUpData {
+        val token = getSavedToken() ?: ""
+//        val result = try {
+            return api.getUserById(token.toTokenMap(), id).data
+//        } catch (e: Exception) {
+//            return Resource.Failure(message = e.message.toString())
+//        }
+//        return if (result.success)
+//            Resource.Success(result.data)
+//        else Resource.Failure(message = result.message)
+    }
+
+
+    suspend fun getUserPlansById(id: Int): Resource<List<PlanData>> {
         val token = getSavedToken() ?: return Resource.Failure("token does not exist")
         val result = try {
-            api.getUserById(token.toTokenMap(), id)
+            api.getUserPlansById(token.toTokenMap(), id)
         } catch (e: Exception) {
             return Resource.Failure(message = e.message.toString())
         }
@@ -116,6 +129,7 @@ class CapstoneRepository @Inject constructor(
             Resource.Success(result.data)
         else Resource.Failure(message = result.message)
     }
+
 
     suspend fun changeUserNickname(newNickname: String): Resource<String> {
         val token = getSavedToken() ?: return Resource.Failure("token does not exist")
@@ -307,6 +321,19 @@ class CapstoneRepository @Inject constructor(
         return if (result.success)
             Resource.Success(data = result.data)
         else Resource.Failure(message = result.message)
+    }
+
+    suspend fun getFeedList(): Resource<List<FeedData>> {
+        val token = getSavedToken() ?: return Resource.Failure("token does not exist")
+        val result = try {
+            api.getFeed(token.toTokenMap())
+        } catch (e: Exception) {
+            return Resource.Failure(message = e.message.toString())
+        }
+        return if (result.success)
+            Resource.Success(data = result.data)
+        else Resource.Failure(message = result.message)
+
     }
 
 

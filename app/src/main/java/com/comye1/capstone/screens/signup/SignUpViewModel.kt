@@ -76,7 +76,7 @@ class SignUpViewModel @Inject constructor(
                     is Resource.Success -> {
                         signUpResult = true
                         messageChannel.send("Success")
-                        Log.d("signup 2", it.data.createdAt)
+                        Log.d("signup 2", it.data.nickname)
                     }
                     is Resource.Failure -> {
                         signUpResult = false

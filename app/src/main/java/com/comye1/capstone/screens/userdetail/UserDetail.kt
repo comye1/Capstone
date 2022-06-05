@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.comye1.capstone.R
 import com.comye1.capstone.network.models.FollowData
+import com.comye1.capstone.network.models.PlanData
 import com.comye1.capstone.network.models.SignUpData
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -40,13 +42,13 @@ import kotlinx.coroutines.launch
 fun UserDetailScreen(
     userId: Int,
     toBack: () -> Unit,
-    toGoal: () -> Unit,
+    toGoal: (Int) -> Unit,
     viewModel: UserDetailViewModel = hiltViewModel()
 ) {
     /*
      앱바 등을 어떻게 할지가 고민이다.
      */
-    val user = produceState<SignUpData>(
+    val user = produceState(
         initialValue = SignUpData(-1, "", "", "")
     ) {
         value = viewModel.getUserInfo(userId)
@@ -59,6 +61,12 @@ fun UserDetailScreen(
     val followingList = produceState<List<FollowData>>(initialValue = listOf()) {
         value = viewModel.getFollowingList(userId)
     }.value
+
+
+    val planList = produceState<List<PlanData>>(initialValue = listOf()) {
+        value = viewModel.getUserPlans(userId)
+    }.value
+
 
     Column(Modifier.fillMaxSize()) {
         TopAppBar(
@@ -78,6 +86,7 @@ fun UserDetailScreen(
                 .padding(top = 16.dp, bottom = 96.dp, start = 16.dp, end = 16.dp)
         ) {
             UserProfile(
+                isUserOwn = user == viewModel.thisUser,
                 userName = "사용자이름",
                 isFollowing = followingList.any { it.User == viewModel.thisUser },
                 followerNum = followerList.size,
@@ -86,14 +95,14 @@ fun UserDetailScreen(
                 unFollow = { viewModel.unfollowUser(userId) }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            UserDetailPager()
+            UserDetailPager(userPlanList = planList, toGoalDetail = toGoal)
         }
     }
 }
 
 @ExperimentalPagerApi
 @Composable
-fun UserDetailPager() {
+fun UserDetailPager(userPlanList: List<PlanData>, toGoalDetail: (Int) -> Unit) {
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
@@ -133,22 +142,27 @@ fun UserDetailPager() {
     ) { page ->
         when (page) {
             0 -> {
-                GoalList() // goal_detail 이동
+                LazyColumn(Modifier.fillMaxSize()) {
+                    repeat(30) {
+                        item {
+                            GoalListItem()
+                            Divider()
+                        }
+                    }
+                }
             }
             1 -> {
-                FeedList()
-            }
-        }
-    }
-}
-
-@Composable
-fun GoalList() {
-    LazyColumn(Modifier.fillMaxSize()) {
-        repeat(30) {
-            item {
-                GoalListItem()
-                Divider()
+                LazyColumn(Modifier.fillMaxSize()) {
+                    items(userPlanList, key = { item -> item.id }) {
+                        FeedListItem(
+                            item = it,
+                            toGoalDetail = {
+                                toGoalDetail(it.goal_id)
+                            }
+                        )
+                        Divider()
+                    }
+                }
             }
         }
     }
@@ -181,19 +195,7 @@ fun GoalListItem() {
 }
 
 @Composable
-fun FeedList() {
-    LazyColumn(Modifier.fillMaxSize()) {
-        repeat(30) {
-            item {
-                FeedListItem()
-                Divider()
-            }
-        }
-    }
-}
-
-@Composable
-fun FeedListItem() {
+fun FeedListItem(item: PlanData, toGoalDetail: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -203,58 +205,19 @@ fun FeedListItem() {
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "goal",
+                text = "goal title",
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.clickable {
-                    //onGoalTitleClick()
-                }
+                modifier = Modifier.clickable(onClick = toGoalDetail)
             )
             Text(
-                text = "title",
+                text = item.plan_title,
                 style = MaterialTheme.typography.h6,
                 modifier = Modifier.clickable {
 //                    onPlanTitleClick()
                 }
             )
-            Text(text = "내용 내용 내용 내용입니다 아무거나 아무거나 적었습니다.")
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = {
-                    //likeButtonClick()
-                }) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (true/*userLike*/) {
-                            Icon(
-                                imageVector = Icons.Default.Favorite,
-                                contentDescription = "like this",
-                                modifier = Modifier.size(20.dp)
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.FavoriteBorder,
-                                contentDescription = "don't like this",
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(text = "3 ") //likeCount
-                    }
-                }
-                Spacer(modifier = Modifier.width(4.dp))
-                IconButton(onClick = { }) { //commentButtonClick()
-                    Row {
-                        Icon(
-                            imageVector = Icons.Outlined.Comment,
-                            contentDescription = "write a comment",
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(text = "5") //$commentCount
-                    }
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(text = "2022.4.11")
-            }
+            Text(text = item.content)
+            Text(text = item.createdAt)
 
         }
         Spacer(modifier = Modifier.width(16.dp))
@@ -272,6 +235,7 @@ fun FeedListItem() {
 
 @Composable
 fun UserProfile(
+    isUserOwn: Boolean,
     profileImage: Painter = painterResource(id = R.drawable.sample),
     userName: String,
     followerNum: Int,
@@ -319,15 +283,17 @@ fun UserProfile(
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
-            TextButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = if (isFollowing) unFollow else follow,
-                colors = ButtonDefaults.textButtonColors(
-                    backgroundColor = MaterialTheme.colors.primary,
-                    contentColor = Color.White
-                )
-            ) {
-                Text(text = if (isFollowing) "언팔로우" else "팔로우") // or 팔로잉
+            if (!isUserOwn) {
+                TextButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = if (isFollowing) unFollow else follow,
+                    colors = ButtonDefaults.textButtonColors(
+                        backgroundColor = MaterialTheme.colors.primary,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(text = if (isFollowing) "언팔로우" else "팔로우") // or 팔로잉
+                }
             }
         }
     }

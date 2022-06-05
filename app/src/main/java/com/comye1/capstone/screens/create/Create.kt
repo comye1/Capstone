@@ -1,4 +1,4 @@
-package com.comye1.capstone.screens
+package com.comye1.capstone.screens.create
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,7 +18,6 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
-import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -120,50 +119,7 @@ fun CreateScreen(
                             }
                         }
                     }
-                    viewModel.showDescEditor -> {
 
-                        Dialog(onDismissRequest = { viewModel.closeDescEditor() }) {
-                            var desc by remember {
-                                mutableStateOf(viewModel.currentDesc)
-                            }
-                            Column(
-
-                                Modifier
-                                    .clip(RoundedCornerShape(size = 12.dp))
-                                    .background(Color.White)
-                                    .padding(16.dp)
-                            ) {
-                                Text(text = "설명 수정하기")
-                                Spacer(modifier = Modifier.height(16.dp))
-                                TextField(
-                                    value = desc,
-                                    onValueChange = { desc = it },
-                                    placeholder = { Text("설명") },
-                                    modifier = Modifier.height(150.dp),
-                                    trailingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.Clear,
-                                            contentDescription = "clear",
-                                            modifier = Modifier.clickable {
-                                                desc = ""
-                                            })
-                                    }
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Button(onClick = { viewModel.closeDescEditor() }) {
-                                        Text("취소")
-                                    }
-                                    Button(onClick = { viewModel.saveDesc(desc) }) {
-                                        Text("저장")
-                                    }
-                                }
-                            }
-                        }
-                    }
                 }
 
                 Scaffold(topBar = {
@@ -247,27 +203,6 @@ fun CreateScreen(
                                 contentDescription = "dropdown",
                                 modifier = Modifier.padding(end = 8.dp)
                             )
-                        }
-
-                        Divider()
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-//                                .border(
-//                                    border = BorderStroke(0.5.dp, Color.Gray),
-//                                    RoundedCornerShape(5.dp)
-//                                )
-                                .clickable(onClick = viewModel::openDescEditor)
-                                .padding(8.dp),
-                            verticalAlignment = CenterVertically
-                        ) {
-                            Text(
-                                text = viewModel.currentDesc,
-                                modifier = Modifier.weight(1f)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Icon(imageVector = Icons.Default.Edit, contentDescription = "edit")
-                            Spacer(modifier = Modifier.width(8.dp))
                         }
                         Divider()
                         Text(

@@ -23,12 +23,17 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.comye1.capstone.R
+import com.comye1.capstone.screens.mygoal.MyGoalViewModel
 import com.comye1.capstone.ui.simpleVerticalScrollbar
 
 
 @Composable
-fun PlayerBottomSheetHandle(expandBottomSheet: () -> Unit) {
+fun PlayerBottomSheetHandle(
+    viewModel: MyGoalViewModel = hiltViewModel(),
+    expandBottomSheet: () -> Unit
+) {
 
     val (planCompleted, completePlan) = remember {
         mutableStateOf(false)
@@ -54,43 +59,53 @@ fun PlayerBottomSheetHandle(expandBottomSheet: () -> Unit) {
             alignment = Alignment.Center,
             contentDescription = "image"
         )
-        Spacer(modifier = Modifier.width(16.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = "goal title")
-            Text(text = "plan title", fontSize = 24.sp)
+        if (viewModel.currentGoal.goal_title == ""){
+            Text(text = "선택된 계획이 없습니다.", fontSize = 18.sp)
         }
-        Spacer(modifier = Modifier.width(16.dp))
-        // 시작전 진행중 완료
-        if (checked) {
-            TextButton(
-                onClick = { checkOrNot(false) },
-                border = BorderStroke(1.dp, MaterialTheme.colors.primary)
-            ) {
-                Text(text = "시작")
+        else {
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = "캡스톤 디자인 프로젝트", fontSize = 12.sp)
+                Text(text = "발표자료 완성하기", fontSize = 18.sp)
             }
-        } else {
-            TextButton(
-                onClick = {
-                    checkOrNot(true)
-                    completePlan(true)
-                },
-                border = BorderStroke(1.dp, MaterialTheme.colors.primary)
-            ) {
-                Text(text = "완료")
+            Spacer(modifier = Modifier.width(16.dp))
+            // 시작전 진행중 완료
+            if (viewModel.currentPlan != viewModel.seekingPlan) {
+                TextButton(
+                    onClick = viewModel::startSeekingPlan,
+                    border = BorderStroke(1.dp, MaterialTheme.colors.primary)
+                ) {
+                    Text(text = "시작")
+                }
+            } else {
+                TextButton(
+                    enabled = !viewModel.currentPlan.is_checked,
+                    onClick = {
+                        checkOrNot(true)
+                        completePlan(true)
+                    },
+                    border = BorderStroke(1.dp, MaterialTheme.colors.primary)
+                ) {
+                    Text(text = "완료")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                TextButton(
+                    onClick = { expandBottomSheet() },
+                    border = BorderStroke(1.dp, MaterialTheme.colors.primary)
+                ) {
+                    Text(text = "다른 목표")
+                }
             }
-            Spacer(modifier = Modifier.width(8.dp))
-            TextButton(
-                onClick = { expandBottomSheet() },
-                border = BorderStroke(1.dp, MaterialTheme.colors.primary)
-            ) {
-                Text(text = "다른 목표")
-            }
+
         }
     }
     if (planCompleted)
         PlanCompleteDialog(
             onSave = { content ->
                 completePlan(false)
+                viewModel.completePlan(viewModel.currentPlan, content = content) {
+                    viewModel.movePlan()
+                }
             },
             onCancel = {
                 checkOrNot(false)
@@ -131,8 +146,8 @@ fun PlanCompleteDialog(onSave: (String) -> Unit, onCancel: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = "goal title")
-                    Text(text = "plan title", fontSize = 24.sp)
+                    Text(text = "캡스톤 디자인 프로젝트")
+                    Text(text = "발표자료 완성하기", fontSize = 24.sp)
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -171,7 +186,7 @@ fun PlayerBottomSheetContent(bottomPadding: Dp) {
             DropDownGoalMenu()
 
         }
-        Text("다른 골 목록 어쩌구", modifier = Modifier.padding(16.dp))
+//        Text("다른 골 목록 어쩌구", modifier = Modifier.padding(16.dp))
 
         Spacer(modifier = Modifier.height(bottomPadding))
     }
@@ -217,17 +232,42 @@ fun DropDownGoalMenu() {
                     .border((1.5).dp, color = Color.LightGray)
                     .simpleVerticalScrollbar(lazyColumnState)
             ) {
-                items(10) { idx ->
+//                items(10) { idx ->
+//                    DropDownGoalItem(
+//                        onClick = {
+//                            setGoalIdx(idx)
+//                            setGoalTitle("다른 목표 $idx")
+//                            setExpanded(false)
+//                        },
+//                        clicked = goalIdx == idx,
+//                        text = "다른 목표 $idx"
+//                    )
+//                    Divider()
+//                }
+                item {
                     DropDownGoalItem(
                         onClick = {
-                            setGoalIdx(idx)
-                            setGoalTitle("다른 목표 $idx")
+                            setGoalIdx(0)
+                            setGoalTitle("토익스피킹 레벨7")
                             setExpanded(false)
                         },
-                        clicked = goalIdx == idx,
-                        text = "다른 목표 $idx"
+                        clicked = goalIdx == 0,
+                        text = "토익스피킹 레벨7"
                     )
                     Divider()
+                }
+                item {
+                    DropDownGoalItem(
+                        onClick = {
+                            setGoalIdx(1)
+                            setGoalTitle("다른 목표")
+                            setExpanded(false)
+                        },
+                        clicked = goalIdx == 1,
+                        text = "다른 목표"
+                    )
+                    Divider()
+
                 }
             }
         }

@@ -12,7 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.outlined.Comment
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -20,49 +19,46 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.comye1.capstone.R
+import com.comye1.capstone.network.models.FeedData
+import com.comye1.capstone.network.models.LikeData
 
 data class FeedItemDataClass(
+    val goal_id: Int = -1111,
+    val plan_id: Int = -111,
     val userName: String,
-    val date: String,
     val goal: String,
     val title: String,
-    val imgId: Int? = null,
-    val description: String
+    val description: String,
+    var like: List<LikeData> = listOf(),
 )
 
 object FeedItems {
     val list = listOf(
         FeedItemDataClass(
             userName = "예원",
-            date = "5분 전",
             goal = "쇼팽 친해지기",
             title = "영웅 폴로네이즈",
             description = "'영웅' 이라는 이름이 붙은 이유가 재밌다. 조성진의 연주 짱이다",
         ),
         FeedItemDataClass(
             userName = "정인",
-            date = "49분 전",
             goal = "자전거 국토종주를 향해",
             title = "한강에서 10km 타기",
             description = "지난 주보다 숨이 덜 찼다. 가을 날씨 선선하다 ^^",
         ),
         FeedItemDataClass(
             userName = "희서",
-            date = "2시간 전",
             goal = "고전영화 섭렵하기",
             title = "바람과 함께 사라지다",
-            imgId = R.drawable.gone_with_wind,
             description = "내일은 내일의 태양이 뜬다.",
         ),
         FeedItemDataClass(
             userName = "혜성",
-            date = "어제",
             goal = "토익 만점을 향해",
             title = "오답을 고른 이유 분석하기",
             description = "자꾸만 터무니 없는 실수를 한다. " +
@@ -70,7 +66,6 @@ object FeedItems {
         ),
         FeedItemDataClass(
             userName = "혜성",
-            date = "어제",
             goal = "토익 만점을 향해",
             title = "오답을 고른 이유 분석하기",
             description = "자꾸만 터무니 없는 실수를 한다. " +
@@ -78,7 +73,6 @@ object FeedItems {
         ),
         FeedItemDataClass(
             userName = "혜성",
-            date = "어제",
             goal = "토익 만점을 향해",
             title = "오답을 고른 이유 분석하기",
             description = "자꾸만 터무니 없는 실수를 한다. " +
@@ -94,21 +88,14 @@ object FeedItems {
 //        Pair(1, false),
 //        Pair(5, true)
 //    )
-    val commentList = listOf(
-        2,
-        0,
-        5,
-        1,
-        6,
-        3
-    )
 }
 
 @ExperimentalMaterialApi
 @Composable
 fun FeedScreen(
-    toGoalDetail: () -> Unit,
-    toUserDetail: () -> Unit
+    viewModel: FeedViewModel = hiltViewModel(),
+    toGoalDetail: (Int) -> Unit,
+    toUserDetail: (Int) -> Unit
 ) {
 
     val likeList = remember {
@@ -130,7 +117,7 @@ fun FeedScreen(
                 .fillMaxSize()
 //                .padding(paddingValues = it)
         ) {
-            itemsIndexed(FeedItems.list) { index, item ->
+            itemsIndexed(viewModel.feedItemList) { index, item ->
                 Divider(Modifier.height(8.dp))
                 FeedItem(
                     item,
@@ -146,11 +133,9 @@ fun FeedScreen(
                                 Pair(likeList[index].first + 1, !likeList[index].second)
                         }
                     },
-                    commentCount = FeedItems.commentList[index],
-                    commentButtonClick = { },
-                    onGoalTitleClick = { toGoalDetail() },
-                    onPlanTitleClick = { toGoalDetail() },
-                    onUserNameClick = { toUserDetail() }
+                    onGoalTitleClick = { toGoalDetail(0) },
+                    onPlanTitleClick = { toGoalDetail(0) },
+                    onUserNameClick = { toUserDetail(0) }
                 )
             }
             item {
@@ -170,8 +155,6 @@ fun FeedItem(
     userLike: Boolean,
     onUserNameClick: () -> Unit,
     likeButtonClick: () -> Unit,
-    commentCount: Int,
-    commentButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -198,13 +181,13 @@ fun FeedItem(
                     Text(
                         text = item.goal,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.clickable { onGoalTitleClick() }
+                        modifier = Modifier.clickable (onClick = onGoalTitleClick)
                     )
                 }
 
             }
             Row {
-                Text(text = item.date, color = Color.Gray, fontSize = 12.sp)
+//                Text(text = item.date, color = Color.Gray, fontSize = 12.sp)
             }
         }
         Spacer(modifier = Modifier.height(4.dp))
@@ -213,16 +196,6 @@ fun FeedItem(
             style = MaterialTheme.typography.h6,
             modifier = Modifier.clickable { onPlanTitleClick() }
         )
-        if (item.imgId != null) {
-            Image(
-                painter = painterResource(id = item.imgId),
-                contentDescription = item.title,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp),
-                contentScale = ContentScale.Crop
-            )
-        }
         Spacer(modifier = Modifier.height(4.dp))
         Text(text = item.description, style = MaterialTheme.typography.subtitle1)
         Row {
@@ -238,17 +211,6 @@ fun FeedItem(
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(text = "$likeCount")
-                }
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            IconButton(onClick = { commentButtonClick() }) {
-                Row {
-                    Icon(
-                        imageVector = Icons.Outlined.Comment,
-                        contentDescription = "write a comment"
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "$commentCount")
                 }
             }
         }

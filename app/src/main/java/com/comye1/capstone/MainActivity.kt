@@ -17,11 +17,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.comye1.capstone.navigation.BottomNavigationBar
 import com.comye1.capstone.navigation.Screen
+import com.comye1.capstone.screens.create.CreateScreen
 import com.comye1.capstone.screens.explore.Explore
 import com.comye1.capstone.screens.explore.ExploreSearchScreen
 import com.comye1.capstone.screens.feed.FeedScreen
@@ -30,8 +33,8 @@ import com.comye1.capstone.screens.list.ListScreen
 import com.comye1.capstone.screens.mygoal.MyGoalScreen
 import com.comye1.capstone.screens.player.PlayerBottomSheetContent
 import com.comye1.capstone.screens.player.PlayerBottomSheetHandle
-import com.comye1.capstone.screens.settings.SettingsScreen
 import com.comye1.capstone.screens.userdetail.UserDetailScreen
+import com.comye1.capstone.settings.SettingsScreen
 import com.comye1.capstone.ui.ExitDialog
 import com.comye1.capstone.ui.theme.CapstoneTheme
 import com.comye1.capstone.ui.theme.StatusBarColor
@@ -99,8 +102,8 @@ class MainActivity : ComponentActivity() {
                             composable(Screen.Feed.route) {
                                 showBottomBar(true)
                                 FeedScreen(
-                                    toGoalDetail = { navController.navigate("goal_detail") },
-                                    toUserDetail = { navController.navigate("user_detail") }
+                                    toGoalDetail = { navController.navigate("goal_detail/$it") },
+                                    toUserDetail = { navController.navigate("user_detail/$it") }
                                 )
                             }
                             composable(Screen.Explore.route) {
@@ -113,37 +116,76 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(Screen.List.route) {
                                 showBottomBar(true)
-                                ListScreen(paddingValues)
+                                ListScreen(
+                                    paddingValues,
+                                    toMyGoal = { goalId ->
+                                        navController.navigate("my_goal/$goalId")
+                                    },
+                                    toCreateScreen = { navController.navigate("create") },
+                                )
+                            }
+                            composable("create") {
+                                CreateScreen() { navController.popBackStack() }
+
                             }
                             composable(Screen.Setting.route) {
                                 showBottomBar(true)
-                                SettingsScreen(paddingValues)
+                                SettingsScreen()
                             }
-                            composable("user_detail") {
+                            composable(
+                                route = "user_detail/{userId}",
+                                arguments = listOf(navArgument(name = "userId") {
+                                    type = NavType.IntType
+                                    defaultValue = 0
+                                })
+                            ) {
+                                val userId = it.arguments?.getInt("userId") ?: 0
                                 showBottomBar(false)
                                 UserDetailScreen(
+                                    userId = userId,
                                     toBack = {
                                         navController.popBackStack()
                                     },
-                                    toGoal = {
-                                        navController.navigate("goal_detail")
+                                    toGoal = { id ->
+                                        navController.navigate("goal_detail/$id")
                                     }
                                 )
                             }
-                            composable("goal_Detail") {
+                            composable(
+                                "goal_Detail/{id}", arguments = listOf(navArgument(name = "id") {
+                                    type = NavType.IntType
+                                    defaultValue = 0
+                                })
+                            ) {
+                                val id = it.arguments!!.getInt("id")
                                 showBottomBar(false)
-                                GoalDetailScreen {
+                                GoalDetailScreen(
+                                    id,
+                                    toBack = {
+                                        navController.popBackStack()
+                                    },
+                                    toMyGoal = { goalId ->
+                                        navController.navigate("my_goal/$goalId")
+                                    }
+                                )
+                            }
+                            composable(
+                                "my_goal/{goalId}",
+                                arguments = listOf(navArgument(name = "goalId") {
+                                    type = NavType.IntType
+                                    defaultValue = 0
+                                })
+                            ) {
+                                val id = it.arguments!!.getInt("goalId")
+                                showBottomBar(false)
+                                MyGoalScreen(id) {
                                     navController.popBackStack()
                                 }
-                            }
-                            composable("my_goal") {
-                                showBottomBar(false)
-                                MyGoalScreen()
                             }
                             composable("search") {
                                 showBottomBar(false)
                                 ExploreSearchScreen(
-                                    toGoalDetail = { navController.navigate("goal_detail") }
+                                    toGoalDetail = { navController.navigate("goal_detail/$it") }
                                 ) {
                                     navController.popBackStack()
                                 }
